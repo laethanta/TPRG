@@ -51,7 +51,7 @@
           <div class="segment lethal" :style="{ width: hpPercents.lethal + '%' }"></div>
           <div class="segment aggra" :style="{ width: hpPercents.aggra + '%' }"></div>
         </div>
-        <div class="resource-value">{{ store.protagonist?.生理与状态?.生命状态?.完好 || 0 }} / {{ store.derivedStats.最大生命值 }}</div>
+        <div class="resource-value">{{ store.protagonist?.生理与状态?.生命状态?.完好 || 0 }} / {{ store.derivedStats.最大HP }}</div>
       </div>
 
       <div class="resource-row">
@@ -191,7 +191,7 @@
 import { ref, computed } from 'vue';
 import { useDataStore } from '../store';
 
-const store: any = useDataStore();
+const store = useDataStore();
 
 const tabs = [
   { id: 'attributes', label: '角色面板' },
@@ -204,7 +204,7 @@ const notification = ref('');
 // 计算 HP 百分比用于渲染多段血条
 const hpPercents = computed(() => {
   const hp = store.protagonist?.生理与状态?.生命状态;
-  const max = store.derivedStats.最大生命值 || 1;
+  const max = store.derivedStats.最大HP || 1;
   if (!hp) return { intact: 100, shock: 0, lethal: 0, aggra: 0 };
   return {
     intact: (hp.完好 / max) * 100,

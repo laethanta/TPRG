@@ -108,6 +108,7 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
       最大意志力: attrs['决心'].value + attrs['沉着'].value + (legResolve * 3) + (legComposure * 3),
       先攻: attrs['敏捷'].value + attrs['沉着'].value + (legComposure * 3),
       速度: attrs['力量'].value + attrs['敏捷'].value + 5,
+      基础防御: baseDefense,
       // 总防御DP削减
       总防御: baseDefense + armorDef + shieldDef,
       // 直接抵消成功数

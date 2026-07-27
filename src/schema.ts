@@ -88,16 +88,16 @@ const EncumbranceSchema = z.object({
 
 
 const DerivedStatsSchema = z.object({
-  最大生命值: z.coerce.number().prefault(5),
+  最大HP: z.coerce.number().prefault(5),
   最大意志力: z.coerce.number().prefault(2),
   基础防御: z.coerce.number().prefault(1),
   防御附加成功: z.coerce.number().prefault(0),
   先攻: z.coerce.number().prefault(2),
-  速度_米: z.coerce.number().prefault(10),
+  速度: z.coerce.number().prefault(10),
   意志豁免DP: z.coerce.number().prefault(2),
   反射豁免DP: z.coerce.number().prefault(2),
   强韧豁免DP: z.coerce.number().prefault(2)
-}).prefault({ 最大生命值: 5, 最大意志力: 2, 基础防御: 1, 防御附加成功: 0, 先攻: 2, 速度_米: 10, 意志豁免DP: 2, 反射豁免DP: 2, 强韧豁免DP: 2 });
+}).prefault({ 最大HP: 5, 最大意志力: 2, 基础防御: 1, 防御附加成功: 0, 先攻: 2, 速度: 10, 意志豁免DP: 2, 反射豁免DP: 2, 强韧豁免DP: 2 });
 
 // 生理与状态集合 (通用基础结构)
 
