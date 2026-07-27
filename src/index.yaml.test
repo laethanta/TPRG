@@ -766,6 +766,7 @@
         类型: 脚本
         内容: |-
           import 'https://testingcf.jsdelivr.net/gh/laethanta/TRPG@main/dist/脚本/变量结构/index.js';
+          //# sourceMappingURL=index.js.map
         导出时携带:
           数据: true
           按钮: true

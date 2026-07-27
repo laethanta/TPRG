@@ -24,11 +24,30 @@ $(async () => {
 
       // 1. 自动汇总属性值并写入 MVU
       const attrNames = ['力量', '敏捷', '耐力', '智力', '感知', '决心', '风度', '操控', '沉着'];
+
+      // 扫描强化模板，提取属性加成
+      const templates = entity.特质与模板?.强化模板 || {};
+      const templateBonus: Record<string, number> = {};
+      for (const tpl of Object.values<any>(templates)) {
+        if (tpl.属性加成记录) {
+          for (const [attrName, bonus] of Object.entries(tpl.属性加成记录)) {
+            templateBonus[attrName] = (templateBonus[attrName] || 0) + Number(bonus);
+          }
+        }
+      }
+
       for (const name of attrNames) {
         if (attrs[name]) {
-          // 由于目前去除了由AI填写的附加常驻/临时加值字段，
-          // 当前值直接等于基础值。如果未来需要在脚本中扫描特质来累加，可以在这里扩展。
-          const currentVal = Number(attrs[name].基础值 || 0);
+          const base = Number(attrs[name].基础值 || 0);
+
+          // 如果没有明确由AI设置常驻加值，将模板加成自动同步过去
+          attrs[name].附加常驻缓存 = templateBonus[name] || 0;
+
+          const permanentBonus = Number(attrs[name].附加常驻缓存 || 0);
+          const tempBonus = Number(attrs[name].临时加值缓存 || 0);
+
+          const currentVal = Math.max(0, base + permanentBonus + tempBonus);
+
           attrs[name].当前值 = currentVal;
           attrs[name].传奇点数 = currentVal >= 6 ? Math.floor((currentVal - 1) / 5) : 0;
         }

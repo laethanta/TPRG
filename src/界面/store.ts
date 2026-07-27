@@ -1,28 +1,18 @@
 import { defineStore } from 'pinia';
-import { computed, Ref, ref } from 'vue';
-import { z } from 'zod';
-// 假设这些来自框架提供的库 (请根据实际路径调整)
-// import { defineMvuDataStore } from '@util/mvu';
-// import { getCurrentMessageId } from '@util/tavern';
+import { computed } from 'vue';
+import { defineMvuDataStore } from '@util/mvu';
 import { Schema } from '../schema';
 import _ from 'lodash';
 
-// 临时占位，实际项目中需从框架导入
-function defineMvuDataStore<T extends z.ZodObject<any, any>, R>(
-  schema: T,
-  _options: any,
-  setup: (data: Ref<z.infer<T>>) => R
-) {
-  return defineStore('mvuData', () => {
-    // 模拟数据源，实际应为 Ref<z.infer<typeof Schema>>
-    const data = ref(schema.parse({})) as Ref<z.infer<T>>;
-    return setup(data);
-  });
-}
+// 初始化底层 MVU 数据源 Store，连接到酒馆的真实数据层
+export const useMvuStore = defineMvuDataStore(Schema, { type: 'message', message_id: getCurrentMessageId() });
 
-function getCurrentMessageId() { return 0; }
+// 包装一层派生数据的 Store，供前端各个组件调用
+export const useDataStore = defineStore('mvuDerivedData', () => {
+  const mvuStore = useMvuStore();
+  // 因为底层 mvuStore 的核心数据挂载在 .data 上
+  const data = computed(() => mvuStore.data);
 
-export const useDataStore = defineMvuDataStore(Schema, { type: 'message', message_id: getCurrentMessageId() }, (data: Ref<z.infer<typeof Schema>>) => {
   const protagonist = computed(() => data.value.主角);
 
   // 1. 【动态当前属性计算 & 传奇属性】
@@ -65,7 +55,7 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
     const volume = protagonist.value.生理与状态.负重系统?.体积 ?? 5;
 
     // 生命值调整值 (简化映射：超微0, 微1, 小2, 中5, 大10, 超大17, 巨26, 超巨37)
-    let hpMod = 5;
+    let hpMod: number;
     if (volume < 1) hpMod = 0;
     else if (volume === 1) hpMod = 1;
     else if (volume <= 3) hpMod = 2;
@@ -137,7 +127,7 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
   // 4. 【负重状态计算】
   const encumbrance = computed(() => {
     // 实际项目中应遍历所有未在容器中的物品
-    let totalWeightKg = protagonist.value.生理与状态.负重系统.当前负重_kg || 0;
+    const totalWeightKg = protagonist.value.生理与状态.负重系统.当前负重_kg || 0;
 
     const strength = currentAttributes.value['力量'].value;
     const legStrength = currentAttributes.value['力量'].legendary;
@@ -168,7 +158,7 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
     for (const [npcName, npcData] of Object.entries(records)) {
       if (!npcData.关系记录) continue;
       const fav = npcData.关系记录.好感度;
-      let level = '冷淡';
+      let level: string;
 
       if (fav <= 20) level = '敌对';
       else if (fav <= 40) level = '不友善';
