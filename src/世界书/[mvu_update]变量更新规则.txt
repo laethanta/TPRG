@@ -1,0 +1,200 @@
+---
+变量更新规则:
+  主角.属性面板:
+    type: |-
+      {
+        力量: { 基础值: number; };
+        敏捷: { 基础值: number; };
+        耐力: { 基础值: number; };
+        智力: { 基础值: number; };
+        感知: { 基础值: number; };
+        决心: { 基础值: number; };
+        风度: { 基础值: number; };
+        操控: { 基础值: number; };
+        沉着: { 基础值: number; };
+      }
+    check:
+      - "基础值：仅在主神空间花费分数强化，或经历剧情获得永久属性成长时由 ST 手动更新数值"            - "禁止 ST 修改常驻加值缓存、临时加值缓存！这些是由脚本提取血统和装备效果后自动计算的"
+
+  主角.技能列表:
+    type: |-
+      {
+        [技能名称: string]: { 等级: number; 已解锁专业: string[]; };
+      }
+    check:
+      - "技能名称可以是设定的基础19项（运动、肉搏、驾驶、枪械、手上功夫、隐藏、求生、白刃、学识、电脑、手艺、调查、医学、神秘学、科学、动物沟通、感受、表达、胁迫、交际、掩饰。），也可以是特定子技能（格式必须为 '主分类-子类'，例如：'手艺-制造科技盔甲'、'表达-演奏'）"
+      - "仅在花费 XP 升级，或剧情中学习时更新技能等级"
+      - "基础技能达到3级或4级时可免费获得一个专业（记录在已解锁专业数组中）；如果是 '手艺-制造' 这种子技能，其子分类名本身就是专业，直接通过子技能名生效，无需填入已解锁专业"
+
+
+  主角.特质与模板.专长列表:
+    type: |-
+      {
+        [专长名: string]: {
+          名称: string;
+          类型: "普通专长" | "非凡专长" | "超魔专长" | "建卡专长" | "缺陷" | "怪癖" | "天赋";
+          等级或点数: number;
+          前提: string;
+          描述: string;
+          特性列表: {名称: string; 效果: string}[];
+          特殊: string;
+        }
+      }
+    check:
+      - "在主神空间兑换专长或在剧情中领悟/获得缺陷时新增记录"
+
+  主角.特质与模板.强化模板:
+    type: |-
+      {
+        [模板名: string]: {
+          名称: string;
+          模板分类: "血统" | "改造" | "瞳术" | "修炼体系" | "典籍" | "流派" | "称号";
+          本质: string;
+          前提: string;
+          当前评级或层数: string;
+          价格: string;
+          描述: string;
+          属性加成记录: { [属性名: string]: number };
+          能量池说明: string;
+          技能树说明: string;
+          特性列表: {名称: string; 效果: string}[];
+          特殊: string;
+        }
+      }
+    check:
+      - "在主神空间兑换强化模板时新增记录，严格按照上述完整设定结构填写"
+
+  主角.特质与模板.技艺法术:
+    type: |-
+      {
+        [法术名: string]: {
+          名称: string;
+          类型: "技艺" | "招式" | "法术";
+          本质: string;
+          关键字: string;
+          前提: string;
+          专业: string;
+          威力值?: number;
+          价格: string;
+          动作: string;
+          能耗: string;
+          成分?: string;
+          射程: string;
+          目标: string;
+          范围: string;
+          持续时间: string;
+          描述: string;
+          效果: string;
+          增幅?: string;
+        }
+      }
+    check:
+      - "在主神空间兑换或在剧情中学习法术/技艺时新增记录"
+
+  主角.生理与状态:
+    type: |-
+      {
+        生命状态: { 完好: number; 冲击_B: number; 严重_L: number; 恶性_A: number; };
+        当前意志力: number;
+        能量池: { 名称: string; 当前值: number; 基础上限加成: number; };
+        不良状态点数: { [状态名: string]: number };
+        固有状态: string[];
+        增益状态: string[];
+        基因锁: { 最高已开启阶数: number; 各阶熟练度: number[]; 当前处于开启阶数: number; 反噬记录: object; };
+      }
+    check:
+      - "生命状态: 仅记录受到伤害或治疗的绝对值增减，禁止自行计算满溢转化"
+      - "不良状态点数: 遭受流血、剧痛等时增加数值，仅记录数值，不记录轻/重度"
+      - "固有状态: 遭受倒地、昏迷、失能时添加，解除时移除"
+      - "增益状态: 获得加速、隐形、防护等非数值型BUFF时添加状态名；持续时间结束或主动解除时移除"
+      - "基因锁: 开启时更新当前阶数和记录开启轮数；关闭或战斗结束时，根据反噬规则由脚本自动扣除属性或增加状态，此处重置当前阶数为0并记录反噬轮数即可"
+
+  主角.物品与资产:
+    type: |-
+      {
+        装备栏: { 主武器: string; 副武器_盾牌: string; 盔甲: string; 饰品_其他: string[]; 装备的容器: string[]; };
+        武器库: { [武器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 武器伤害: string; 特殊属性: string; 特性列表: {名称: string; 效果: string}[]; } };
+        防具库: { [防具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 盔甲防御: number; 盔甲减值: number; 敏捷上限: string; 盾牌防御?: number; 特殊属性: string; 特性列表: {名称: string; 效果: string}[]; } };
+        饰品库: { [饰品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 特殊属性: string; 特性列表: {名称: string; 效果: string}[]; } };
+        容器库: { [容器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 空间体积上限: number; 内容物: string[]; 特性列表: {名称: string; 效果: string}[]; } };
+        消耗品与杂物: { [物品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 效果?: string; } };
+        载具库: { [载具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 载具类型: string; 生命: number; 护甲: number; 硬度: number; 速度: string; 灵活性: string; 载员: string; 出力: number; 机动: number; 能源: string; 特性列表: {名称: string; 效果: string}[]; } };
+      }
+    check:
+      - "装备栏: 穿脱装备或饰品时，将库中的物品名更新至主武器/防具/饰品等位置"
+      - "购买、拾取、消耗或丢失物品时更新对应的库。生成新物品必须包含详细设定"
+      - "容器库.[容器名].内容物: 将物品存入或取出空间容器时，增减该列表中的物品名"
+
+  主神货币:
+    type: |-
+      {
+        奖励点: number;
+        经验值_XP: number;
+        支线剧情: { S级: number; A级: number; B级: number; C级: number; D级: number; };
+      }
+    check:
+      - 根据主线/支线结算奖励增加
+      - 兑换、医疗时严格扣除消耗
+
+  世界记录.当前影片_副本信息:
+    type: |-
+      {
+        名称: string;
+        类型: string;
+        难度评级: string;
+        本质倾向: string;
+        当前区域: string;
+        当前地标: string;
+        当前精确时间: string;
+      }
+    check:
+      - "当前精确时间: 格式如 YYYY-MM-DD HH:mm，随剧情时间流逝推进"
+      - "当前区域 / 当前地标: 场景转移时实时更新"
+
+  世界记录.任务日志:
+    type: |-
+      {
+        [任务名: string]: {
+          类型: "主线任务" | "支线任务";
+          目标: string;
+          时间限制: string;
+          成功奖励?: { 奖励点?: number; 经验值_XP?: number; 支线剧情?: object; 其他奖励描述: string };
+          失败惩罚?: { 扣除奖励点?: number; 抹杀?: boolean; 其他惩罚描述: string };
+          当前状态: "未触发" | "进行中" | "已完成" | "已失败";
+        }
+      }
+    check:
+      - 触发支线或主神发布主线时新增记录
+      - 达成条件或超时后，修改当前状态
+
+  世界记录.主神空间档案.主神商店当前列表:
+    type: |-
+      {
+        武器列表: object[];
+        防具列表: object[];
+        强化模板列表: object[];
+        物品与消耗品列表: object[];
+      }
+    check:
+      - "仅当主角主动向主神查询、检索某种强化/武器/道具列表时更新！"
+      - "每次查询必须清空上一次的内容"
+      - "每次检索，请根据需求当场生成 6-10 个符合完整设定的商品记录（包含价格、属性等详细结构），供主角挑选"
+
+  人物关系记录:
+    type: |-
+      {
+        [NPC姓名: string]: {
+          基本信息: { 身份: string; 性别: string; 年龄: string; 性格: string; 外貌: string; 背景描述: string; 所处地点: string; };
+          关系记录: { 好感度: number; 印象简评: string; };
+          属性面板: { 力量: { 基础值: number; }; 敏捷: { 基础值: number; }; 耐力: { 基础值: number; }; 智力: { 基础值: number; }; 感知: { 基础值: number; }; 决心: { 基础值: number; }; 风度: { 基础值: number; }; 操控: { 基础值: number; }; 沉着: { 基础值: number; }; };
+          技能列表: { [技能名称: string]: { 等级: number; 已解锁专业: string[]; }; };
+          特质与模板: { 专长列表: object; 强化模板: object; 技艺法术: object; };
+          生理与状态: { 生命状态: { 完好: number; 冲击_B: number; 严重_L: number; 恶性_A: number; }; 当前意志力: number; 能量池: object; 不良状态点数: object; 固有状态: string[]; 增益状态: string[]; 基因锁: object; };
+          物品与资产: { 当前武器?: object; 当前防具?: object; 携带物品: string[]; };
+        }
+      }
+    check:
+      - "关系记录: 好感度(0~200)，随社交与事件实时增减；印象简评记录NPC当前的核心看法"
+      - "生理与状态.生命状态: 该 NPC 受伤或被治疗时同步更新"
+      - "首次登场的新 NPC 必须自动建立完整初始数据，至少包含：基本信息、属性面板、生理与状态、关系记录"
+      - "新 NPC 的技能列表和特质与模板，如无特殊设定，可按普通人水准自由填充"
