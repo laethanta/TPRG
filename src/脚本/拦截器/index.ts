@@ -9,7 +9,7 @@ declare const $: any;
 $(async () => {
   await waitGlobalInitialized('Mvu');
 
-  eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, (variables: any) => {
+  const handleVariables = (variables: any) => {
     // 抽出计算核心逻辑为一个函数，方便对主角和所有 NPC 循环复用
     const processEntity = (entity: any, isProtagonist: boolean) => {
       if (!entity) return;
@@ -220,5 +220,8 @@ $(async () => {
       });
     }
 
-  });
+  };
+
+  eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, handleVariables);
+  eventOn(Mvu.events.VARIABLE_INITIALIZED, handleVariables);
 });
