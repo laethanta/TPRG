@@ -13,7 +13,7 @@
 
 世界书名称: 与角色卡名称相同
 条目:
-  - 名称: "[initvar]变量初始化勿开"
+  - 名称: '[initvar]变量初始化勿开'
     启用: false
     激活策略:
       类型: 蓝灯
@@ -28,7 +28,7 @@
       不可激活其他条目: true
     文件: 世界书\[initvar]变量初始化勿开
 
-  - 名称: "[mvu_update]变量输出格式强调"
+  - 名称: '[mvu_update]变量输出格式强调'
     启用: true
     激活策略:
       类型: 蓝灯
@@ -43,7 +43,7 @@
       不可激活其他条目: true
     文件: 世界书\[mvu_update]变量输出格式强调
 
-  - 名称: "[mvu_update]变量更新规则"
+  - 名称: '[mvu_update]变量更新规则'
     启用: true
     激活策略:
       类型: 蓝灯
@@ -73,7 +73,7 @@
       不可激活其他条目: true
     文件: 世界书\变量列表
 
-  - 名称: "[mvu_update]变量输出格式"
+  - 名称: '[mvu_update]变量输出格式'
     启用: true
     激活策略:
       类型: 蓝灯
@@ -722,7 +722,7 @@
         ```
         <body>
         <script>
-        $('body').load('https://testingcf.jsdelivr.net/gh/StageDog/tavern_helper_template/dist/界面/状态栏/index.html')
+        $('body').load('https://testingcf.jsdelivr.net/gh/laethanta/TRPG/dist/界面/状态栏/index.html')
         </script>
         </body>
         ```
@@ -732,8 +732,6 @@
       作用于:
         仅格式显示: true
         仅格式提示词: false
-
-
 
   酒馆助手:
     脚本库:
@@ -785,5 +783,3 @@
           按钮: true
 
     变量: {}
-
-
