@@ -17,9 +17,11 @@ const AgeSchema = z.object({
 // 九维属性结构 (仅记录原生投入的加点基础值，当前值和传奇点数由脚本自动汇总后填入衍生速查)
 const AttributeValueSchema = z.object({
   基础值: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  附加常驻缓存: z.coerce.number().describe('由脚本汇总血统/专长等永久加成').prefault(0),
+  临时加值缓存: z.coerce.number().describe('由脚本汇总装备等临时加成').prefault(0),
   当前值: z.coerce.number().describe('由脚本计算，禁止AI修改').prefault(1),
   传奇点数: z.coerce.number().describe('由脚本计算，禁止AI修改').prefault(0)
-}).prefault({ 基础值: 1, 当前值: 1, 传奇点数: 0 });
+}).prefault({ 基础值: 1, 附加常驻缓存: 0, 临时加值缓存: 0, 当前值: 1, 传奇点数: 0 });
 
 const AttributesSchema = z.object({
   // 生理系

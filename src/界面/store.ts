@@ -28,10 +28,28 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
   // 1. 【动态当前属性计算 & 传奇属性】
   const currentAttributes = computed(() => {
     const baseAttrs = protagonist.value.属性面板;
+    const templates = protagonist.value.特质与模板?.强化模板 || {};
+
+    // 计算每个属性的血统/模板加成
+    const templateBonus: Record<string, number> = {};
+    for (const tpl of Object.values<any>(templates)) {
+      if (tpl.属性加成记录) {
+        for (const [attrName, bonus] of Object.entries(tpl.属性加成记录)) {
+          templateBonus[attrName] = (templateBonus[attrName] || 0) + Number(bonus);
+        }
+      }
+    }
+
     const result: Record<string, { value: number; legendary: number }> = {};
 
     for (const [attrName, attrData] of Object.entries<any>(baseAttrs)) {
-      const value = attrData.基础值 + attrData.附加常驻缓存 + attrData.临时加值缓存;
+      const base = attrData.基础值 || 0;
+      // 将模板带来的加成计入附加常驻缓存
+      const permanentBonus = (attrData.附加常驻缓存 || 0) + (templateBonus[attrName] || 0);
+      const tempBonus = attrData.临时加值缓存 || 0;
+
+      // 当前属性最极端情况也不会为负
+      const value = Math.max(0, base + permanentBonus + tempBonus);
       // 传奇属性公式：达到6为1，11为2...
       const legendary = value >= 6 ? Math.floor((value - 1) / 5) : 0;
 
@@ -169,6 +187,31 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
     return result;
   });
 
+  // 4.6 【血统与支线剧情格式化】
+  const bloodline = computed(() => {
+    const templates = protagonist.value.特质与模板?.强化模板 || {};
+    const keys = Object.keys(templates);
+    if (keys.length === 0) return { name: '无血统/改造', level: '无' };
+
+    const mainTemplate = templates[keys[0]];
+    return {
+      name: mainTemplate.名称 || keys[0],
+      level: mainTemplate.当前评级或层数 || '未知'
+    };
+  });
+
+  const branchPlots = computed(() => {
+    const branches = data.value.主神货币?.支线剧情;
+    if (!branches) return '';
+    const parts = [];
+    if (branches['S级'] > 0) parts.push(`S×${branches['S级']}`);
+    if (branches['A级'] > 0) parts.push(`A×${branches['A级']}`);
+    if (branches['B级'] > 0) parts.push(`B×${branches['B级']}`);
+    if (branches['C级'] > 0) parts.push(`C×${branches['C级']}`);
+    if (branches['D级'] > 0) parts.push(`D×${branches['D级']}`);
+    return parts.length > 0 ? parts.join(' ') : '无';
+  });
+
   // 5. 【DP 骰池生成器】
   const getDicePool = (
     attrName: string,
@@ -300,6 +343,8 @@ export const useDataStore = defineMvuDataStore(Schema, { type: 'message', messag
     derivedStats,
     encumbrance,
     npcRelations,
+    bloodline,
+    branchPlots,
     getDicePool
   };
 });
