@@ -17,21 +17,21 @@
         <!-- 血统模态框 -->
         <div v-if="activeModal === 'bloodline' && store.bloodlineDetails" class="content-modal">
           <button class="modal-close-btn" @click="activeModal = null">×</button>
-          <h4 class="modal-title">{{ store.bloodlineDetails.名称 }} <span class="modal-level">[{{ store.bloodlineDetails.当前评级或层数 }}]</span></h4>
+          <h4 class="modal-title">{{ store.bloodlineDetails?.名称 }} <span class="modal-level">[{{ store.bloodlineDetails?.当前评级或层数 }}]</span></h4>
           <div class="modal-body scrollable">
-            <div class="pop-desc">{{ store.bloodlineDetails.描述 || '无描述' }}</div>
-            <div class="pop-section" v-if="Object.keys(store.bloodlineDetails.属性加成记录 || {}).length > 0">
+            <div class="pop-desc">{{ store.bloodlineDetails?.描述 || '无描述' }}</div>
+            <div v-if="Object.keys(store.bloodlineDetails?.属性加成记录 || {}).length > 0" class="pop-section">
               <div class="pop-subtitle">属性加成</div>
               <div class="pop-attr-grid">
-                <span v-for="(val, key) in store.bloodlineDetails.属性加成记录" :key="key" class="pop-attr-tag">
+                <span v-for="(val, key) in store.bloodlineDetails?.属性加成记录" :key="key" class="pop-attr-tag">
                   {{ key }}: +{{ val }}
                 </span>
               </div>
             </div>
-            <div class="pop-section" v-if="(store.bloodlineDetails.特性列表 || []).length > 0">
+            <div v-if="(store.bloodlineDetails?.特性列表 || []).length > 0" class="pop-section">
               <div class="pop-subtitle">特性列表</div>
               <ul class="pop-trait-list">
-                <li v-for="(trait, idx) in store.bloodlineDetails.特性列表" :key="idx">
+                <li v-for="(trait, idx) in store.bloodlineDetails?.特性列表" :key="idx">
                   <strong>{{ trait.名称 }}</strong>: {{ trait.效果 }}
                 </li>
               </ul>
@@ -587,6 +587,12 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
     font-size: 1.2rem;
     border-bottom: 1px solid rgba(234, 179, 8, 0.3);
     padding-bottom: 8px;
+
+    .modal-level {
+      color: $accent-gold;
+      font-size: 0.85rem;
+      font-weight: normal;
+    }
   }
 
   .modal-body {
