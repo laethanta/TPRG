@@ -4,14 +4,56 @@
     <div class="panel-layout">
       <!-- 左侧栏：核心资质与基础参数 -->
       <aside class="left-column">
-        <!-- 头部：血统/改造与评级 -->
+        <!-- 头部：头像、名字、生存状态、基因锁 -->
         <div class="identity-header">
-          <h1 class="char-name">{{ store.protagonist.姓名 || '未知角色' }}</h1>
-          <div class="bloodline-info">
-            <span class="bloodline-name">{{ store.bloodline.name }}</span>
-            <span class="bloodline-level">{{ store.bloodline.level }}</span>
+          <div class="avatar-box">
+            <!-- 这里可以替换成真实的头像路径变量，目前用占位图标 -->
+            <svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="identity-info">
+            <h1 class="char-name">{{ store.protagonist.姓名 || '未知角色' }}</h1>
+            <div class="status-line">
+              <span class="status-alive">STATUS: {{ store.characterStatus }}</span>
+              <span class="separator"> | </span>
+              <span class="gene-lock">基因锁: {{ store.geneLockTier }}</span>
+            </div>
+
+            <!-- 血统/改造与评级 (可点击展开详细信息) -->
+            <div class="bloodline-info" :class="{ 'has-details': store.bloodlineDetails }" @click="showBloodlineDetails = !showBloodlineDetails">
+              <span class="bloodline-name">{{ store.bloodline.name }}</span>
+              <span class="bloodline-level">{{ store.bloodline.level }}</span>
+            </div>
           </div>
         </div>
+
+        <!-- 悬浮弹窗：血统详细信息 -->
+        <transition name="fade">
+          <div v-if="showBloodlineDetails && store.bloodlineDetails" class="bloodline-popover">
+            <h4 class="pop-title">{{ store.bloodlineDetails.名称 }} <span class="pop-level">[{{ store.bloodlineDetails.当前评级或层数 }}]</span></h4>
+            <div class="pop-desc">{{ store.bloodlineDetails.描述 || '无描述' }}</div>
+
+            <div class="pop-section" v-if="Object.keys(store.bloodlineDetails.属性加成记录 || {}).length > 0">
+              <div class="pop-subtitle">属性加成</div>
+              <div class="pop-attr-grid">
+                <span v-for="(val, key) in store.bloodlineDetails.属性加成记录" :key="key" class="pop-attr-tag">
+                  {{ key }}: +{{ val }}
+                </span>
+              </div>
+            </div>
+
+            <div class="pop-section" v-if="(store.bloodlineDetails.特性列表 || []).length > 0">
+              <div class="pop-subtitle">特性列表</div>
+              <ul class="pop-trait-list">
+                <li v-for="(trait, idx) in store.bloodlineDetails.特性列表" :key="idx">
+                  <strong>{{ trait.名称 }}</strong>: {{ trait.效果 }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </transition>
 
         <!-- 资产区：支线剧情、奖励点、XP -->
         <div class="assets-section horizontal-assets">
@@ -125,6 +167,8 @@ import { useDataStore } from '../store';
 
 const store = useDataStore();
 
+const showBloodlineDetails = ref(false);
+
 // HP百分比
 const hpPercents = computed(() => {
   const hp = store.protagonist?.生理与状态?.生命状态;
@@ -211,31 +255,173 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
   letter-spacing: 1px;
 }
 
-/* 头部样式 */
+/* 头部样式：头像与信息组合 */
 .identity-header {
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 
-  .char-name {
-    margin: 0 0 4px 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255,255,255,0.2);
-  }
-
-  .bloodline-info {
+  .avatar-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid $accent-gold;
+    box-shadow: $glow-shadow;
     display: flex;
-    justify-content: space-between;
-    font-size: 0.95rem;
-    color: $accent-gold;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    flex-shrink: 0;
 
-    .bloodline-level {
-      font-family: monospace;
+    .avatar-icon {
+      width: 32px;
+      height: 32px;
+      color: $accent-gold;
     }
   }
+
+  .identity-info {
+    flex: 1;
+
+    .char-name {
+      margin: 0 0 4px 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    .status-line {
+      font-size: 0.85rem;
+      color: $text-dim;
+
+      .status-alive {
+        color: $accent-gold;
+        font-family: monospace;
+      }
+
+      .separator {
+        color: rgba(255,255,255,0.2);
+        margin: 0 4px;
+      }
+
+      .gene-lock {
+        color: #fff;
+        text-shadow: 0 0 5px rgba(255,255,255,0.3);
+      }
+    }
+
+    /* 血统/改造与评级 (可点击展开) */
+    .bloodline-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      color: $accent-gold;
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+
+      &.has-details {
+        cursor: pointer;
+        background: rgba(234, 179, 8, 0.05);
+        border: 1px solid rgba(234, 179, 8, 0.2);
+
+        &:hover {
+          background: rgba(234, 179, 8, 0.1);
+          box-shadow: $glow-shadow;
+        }
+      }
+
+      .bloodline-name {
+        font-weight: 500;
+      }
+
+      .bloodline-level {
+        font-family: monospace;
+      }
+    }
+  }
+}
+
+/* 血统详细信息悬浮弹窗 */
+.bloodline-popover {
+  background: #111116;
+  border: 1px solid $border-gold;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8), $glow-shadow;
+
+  .pop-title {
+    margin: 0 0 8px 0;
+    color: #fff;
+    font-size: 1rem;
+    border-bottom: 1px dotted rgba(234, 179, 8, 0.3);
+    padding-bottom: 4px;
+
+    .pop-level {
+      color: $accent-gold;
+      font-size: 0.85rem;
+      font-weight: normal;
+    }
+  }
+
+  .pop-desc {
+    font-size: 0.85rem;
+    color: $text-dim;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .pop-section {
+    margin-bottom: 8px;
+
+    .pop-subtitle {
+      font-size: 0.8rem;
+      color: $accent-gold;
+      margin-bottom: 4px;
+    }
+
+    .pop-attr-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .pop-attr-tag {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        color: #fff;
+      }
+    }
+
+    .pop-trait-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 0.8rem;
+      color: $text-main;
+
+      li {
+        margin-bottom: 4px;
+        strong { color: #fff; }
+      }
+    }
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 /* 列表行统一样式 (黑魂属性列表风格) */

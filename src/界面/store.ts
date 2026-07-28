@@ -202,6 +202,27 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     return parts.length > 0 ? parts.join(' ') : '无';
   });
 
+  // 4.7 【状态与基因锁格式化】
+  const characterStatus = computed(() => {
+    const status = protagonist.value.生理与状态?.固有状态 || [];
+    if (status.includes('死亡')) return 'DEAD';
+    if (status.includes('昏迷')) return 'COMA';
+    return 'ALIVE';
+  });
+
+  const geneLockTier = computed(() => {
+    const tier = protagonist.value.生理与状态?.基因锁?.当前处于开启阶数 || 0;
+    const numerals = ['未开启', '阶级 I', '阶级 II', '阶级 III', '阶级 IV', '阶级 V'];
+    return numerals[tier] || `阶级 ${tier}`;
+  });
+
+  const bloodlineDetails = computed(() => {
+    const templates = protagonist.value.特质与模板?.强化模板 || {};
+    const keys = Object.keys(templates);
+    if (keys.length === 0) return null;
+    return templates[keys[0]];
+  });
+
   // 5. 【DP 骰池生成器】
   const getDicePool = (
     attrName: string,
@@ -335,6 +356,9 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     npcRelations,
     bloodline,
     branchPlots,
+    characterStatus,
+    geneLockTier,
+    bloodlineDetails,
     getDicePool
   };
 });
