@@ -19,6 +19,7 @@ export function defineMvuDataStore<T extends z.ZodObject>(
       .map(entry => entry[1])
       .join('.')}`,
     errorCatched(() => {
+<<<<<<< HEAD
       let initial_stat_data = _.get(getVariables(variable_option), 'stat_data');
       if (_.isEmpty(initial_stat_data)) {
         initial_stat_data = _.get(getVariables({ type: 'chat' }), 'stat_data', {});
@@ -26,17 +27,25 @@ export function defineMvuDataStore<T extends z.ZodObject>(
 
       const data = ref(
         schema.parse(initial_stat_data, { reportInput: true }),
+=======
+      const data = ref(
+        schema.parse(_.get(getVariables(variable_option), 'stat_data', {}), { reportInput: true }),
+>>>>>>> 3ee370304f725ffc74d481bb24331e890bad1641
       ) as Ref<z.infer<T>>;
       if (additional_setup) {
         additional_setup(data);
       }
 
       useIntervalFn(() => {
+<<<<<<< HEAD
         let stat_data = _.get(getVariables(variable_option), 'stat_data');
         if (_.isEmpty(stat_data)) {
           stat_data = _.get(getVariables({ type: 'chat' }), 'stat_data', {});
         }
 
+=======
+        const stat_data = _.get(getVariables(variable_option), 'stat_data', {});
+>>>>>>> 3ee370304f725ffc74d481bb24331e890bad1641
         const result = schema.safeParse(stat_data);
         if (result.error) {
           return;
