@@ -722,7 +722,7 @@
         ```
         <body>
         <script>
-        $('body').load('https://testingcf.jsdelivr.net/gh/laethanta/TRPG/dist/界面/状态栏/index.html')
+        $('body').load('https://testingcf.jsdelivr.net/gh/laethanta/TRPG@mian/dist/界面/状态栏/index.html')
         </script>
         </body>
         ```
@@ -765,7 +765,7 @@
         启用: true
         类型: 脚本
         内容: |-
-          import 'https://testingcf.jsdelivr.net/gh/laethanta/TRPG/dist/脚本/变量结构/index.js';
+          import 'https://testingcf.jsdelivr.net/gh/laethanta/TRPG@mian/dist/脚本/变量结构/index.js';
         导出时携带:
           数据: true
           按钮: true
@@ -775,7 +775,7 @@
         启用: true
         类型: 脚本
         内容: |-
-          import 'https://testingcf.jsdelivr.net/gh/laethanta/TRPG/dist/脚本/拦截器/index.js';
+          import 'https://testingcf.jsdelivr.net/gh/laethanta/TRPG@mian/dist/脚本/拦截器/index.js';
         导出时携带:
           数据: true
           按钮: true
