@@ -345,6 +345,34 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     return { dp, autoSuccess, perfectBonus, details };
   };
 
+  // 6. 【主神空间物品列表】
+  const godSpaceItems = computed(() => {
+    const list: any[] = [];
+    const s = data.value.世界记录?.主神空间档案?.主神商店当前列表;
+    if (s) {
+      if (s.武器列表) list.push(...s.武器列表);
+      if (s.防具列表) list.push(...s.防具列表);
+      if (s.强化模板列表) list.push(...s.强化模板列表);
+      if (s.物品与消耗品列表) list.push(...s.物品与消耗品列表);
+    }
+    return list;
+  });
+
+  // 7. 【主角持有的物品列表】
+  const inventoryItems = computed(() => {
+    const list: any[] = [];
+    const inv = protagonist.value.物品与资产;
+    if (inv) {
+      Object.values(inv.武器库 || {}).forEach(i => list.push({ ...i, _category: '武器' }));
+      Object.values(inv.防具库 || {}).forEach(i => list.push({ ...i, _category: '防具' }));
+      Object.values(inv.饰品库 || {}).forEach(i => list.push({ ...i, _category: '饰品' }));
+      Object.values(inv.消耗品与杂物 || {}).forEach(i => list.push({ ...i, _category: '杂物' }));
+      Object.values(inv.容器库 || {}).forEach(i => list.push({ ...i, _category: '容器' }));
+      Object.values(inv.载具库 || {}).forEach(i => list.push({ ...i, _category: '载具' }));
+    }
+    return list;
+  });
+
   // 返回给组件使用
   return {
     mvuData: data,
@@ -359,6 +387,8 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     characterStatus,
     geneLockTier,
     bloodlineDetails,
-    getDicePool
+    getDicePool,
+    godSpaceItems,
+    inventoryItems
   };
 });

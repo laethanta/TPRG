@@ -1,5 +1,115 @@
 <template>
   <div class="trpg-status-panel">
+    <!-- 遮罩层 (用于全屏模态框) -->
+    <transition name="fade">
+      <div v-if="activeModal" class="modal-overlay" @click.self="activeModal = null">
+        <!-- 侧边菜单 (Drawer) -->
+        <div v-if="activeModal === 'menu'" class="side-drawer">
+          <button class="drawer-close-btn" @click="activeModal = null">×</button>
+          <h3 class="drawer-title">系统菜单</h3>
+          <div class="drawer-menu">
+            <button class="menu-btn" @click="openModal('store')">主神兑换商店</button>
+            <button class="menu-btn" @click="openModal('inventory')">个人物品栏</button>
+            <button class="menu-btn" @click="openModal('npc')">人际网络</button>
+          </div>
+        </div>
+
+        <!-- 血统模态框 -->
+        <div v-if="activeModal === 'bloodline' && store.bloodlineDetails" class="content-modal">
+          <button class="modal-close-btn" @click="activeModal = null">×</button>
+          <h4 class="modal-title">{{ store.bloodlineDetails.名称 }} <span class="modal-level">[{{ store.bloodlineDetails.当前评级或层数 }}]</span></h4>
+          <div class="modal-body scrollable">
+            <div class="pop-desc">{{ store.bloodlineDetails.描述 || '无描述' }}</div>
+            <div class="pop-section" v-if="Object.keys(store.bloodlineDetails.属性加成记录 || {}).length > 0">
+              <div class="pop-subtitle">属性加成</div>
+              <div class="pop-attr-grid">
+                <span v-for="(val, key) in store.bloodlineDetails.属性加成记录" :key="key" class="pop-attr-tag">
+                  {{ key }}: +{{ val }}
+                </span>
+              </div>
+            </div>
+            <div class="pop-section" v-if="(store.bloodlineDetails.特性列表 || []).length > 0">
+              <div class="pop-subtitle">特性列表</div>
+              <ul class="pop-trait-list">
+                <li v-for="(trait, idx) in store.bloodlineDetails.特性列表" :key="idx">
+                  <strong>{{ trait.名称 }}</strong>: {{ trait.效果 }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主神商店模态框 -->
+        <div v-if="activeModal === 'store'" class="content-modal large-modal">
+          <button class="modal-close-btn" @click="activeModal = null">×</button>
+          <h4 class="modal-title">主神兑换商店</h4>
+          <div class="modal-body scrollable">
+            <div class="item-grid">
+              <div v-for="(item, idx) in store.godSpaceItems" :key="idx" class="item-card" @click="toggleItemDetail(idx, 'store')">
+                <div class="item-header">
+                  <span class="item-name">{{ item.名称 }}</span>
+                  <span class="item-price">{{ item.价格 }}</span>
+                </div>
+                <div class="item-meta">{{ item.本质 }} | {{ item.分类 || '未知' }}</div>
+                <div v-if="expandedItem === `store-${idx}`" class="item-detail-drawer">
+                  {{ item.描述 || '暂无详细描述' }}
+                  <ul v-if="item.特性列表?.length" class="pop-trait-list">
+                    <li v-for="(t, ti) in item.特性列表" :key="ti"><strong>{{ t.名称 }}</strong>: {{ t.效果 }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div v-if="store.godSpaceItems.length === 0" class="empty-hint">当前未连接到主神空间数据库</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 物品栏模态框 -->
+        <div v-if="activeModal === 'inventory'" class="content-modal large-modal">
+          <button class="modal-close-btn" @click="activeModal = null">×</button>
+          <h4 class="modal-title">个人物品栏</h4>
+          <div class="modal-body scrollable">
+            <div class="item-grid">
+              <div v-for="(item, idx) in store.inventoryItems" :key="idx" class="item-card" @click="toggleItemDetail(idx, 'inv')">
+                <div class="item-header">
+                  <span class="item-name">{{ item.名称 }} <span v-if="item.数量 > 1">x{{ item.数量 }}</span></span>
+                  <span v-if="item.已装备" class="equip-badge">已装备</span>
+                </div>
+                <div class="item-meta">{{ item._category }} | {{ item.重量 || '-' }}</div>
+                <div v-if="expandedItem === `inv-${idx}`" class="item-detail-drawer">
+                  {{ item.描述 || '暂无详细描述' }}
+                  <ul v-if="item.特性列表?.length" class="pop-trait-list">
+                    <li v-for="(t, ti) in item.特性列表" :key="ti"><strong>{{ t.名称 }}</strong>: {{ t.效果 }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div v-if="store.inventoryItems.length === 0" class="empty-hint">物品栏空空如也</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NPC 人际网络模态框 -->
+        <div v-if="activeModal === 'npc'" class="content-modal">
+          <button class="modal-close-btn" @click="activeModal = null">×</button>
+          <h4 class="modal-title">人际网络</h4>
+          <div class="modal-body scrollable">
+            <div class="npc-list">
+              <div v-for="(npc, key) in store.npcRelations" :key="key" class="npc-card">
+                <div class="npc-header">
+                  <span class="npc-name">{{ key }}</span>
+                  <span class="npc-level" :class="npc.level">{{ npc.level }}</span>
+                </div>
+                <div class="npc-favor-bar">
+                  <div class="favor-fill" :style="{ width: (Math.min(200, Math.max(0, npc.fav || 0)) / 2) + '%' }"></div>
+                </div>
+                <div class="npc-desc">{{ npc.summary || '暂无印象' }}</div>
+              </div>
+              <div v-if="Object.keys(store.npcRelations).length === 0" class="empty-hint">孤身一人</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- TODO: 未来计划加入UI分辨率/缩放比例的自定义设定 -->
     <div class="panel-layout">
       <!-- 左侧栏：核心资质与基础参数 -->
@@ -22,50 +132,32 @@
             </div>
 
             <!-- 血统/改造与评级 (可点击展开详细信息) -->
-            <div class="bloodline-info" :class="{ 'has-details': store.bloodlineDetails }" @click="showBloodlineDetails = !showBloodlineDetails">
+            <div v-if="store.bloodlineDetails" class="bloodline-info has-details" @click="openModal('bloodline')">
               <span class="bloodline-name">{{ store.bloodline.name }}</span>
               <span class="bloodline-level">{{ store.bloodline.level }}</span>
             </div>
           </div>
+
+          <button class="sys-menu-btn" @click="openModal('menu')" title="系统菜单">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
         </div>
 
-        <!-- 悬浮弹窗：血统详细信息 -->
-        <transition name="fade">
-          <div v-if="showBloodlineDetails && store.bloodlineDetails" class="bloodline-popover">
-            <h4 class="pop-title">{{ store.bloodlineDetails.名称 }} <span class="pop-level">[{{ store.bloodlineDetails.当前评级或层数 }}]</span></h4>
-            <div class="pop-desc">{{ store.bloodlineDetails.描述 || '无描述' }}</div>
-
-            <div class="pop-section" v-if="Object.keys(store.bloodlineDetails.属性加成记录 || {}).length > 0">
-              <div class="pop-subtitle">属性加成</div>
-              <div class="pop-attr-grid">
-                <span v-for="(val, key) in store.bloodlineDetails.属性加成记录" :key="key" class="pop-attr-tag">
-                  {{ key }}: +{{ val }}
-                </span>
-              </div>
-            </div>
-
-            <div class="pop-section" v-if="(store.bloodlineDetails.特性列表 || []).length > 0">
-              <div class="pop-subtitle">特性列表</div>
-              <ul class="pop-trait-list">
-                <li v-for="(trait, idx) in store.bloodlineDetails.特性列表" :key="idx">
-                  <strong>{{ trait.名称 }}</strong>: {{ trait.效果 }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </transition>
-
-        <!-- 资产区：支线剧情、奖励点、XP -->
-        <div class="assets-section horizontal-assets">
-          <div class="h-asset">
+        <!-- 资产区：支线剧情、奖励点、XP (改为上下排列) -->
+        <div class="assets-section">
+          <div class="list-row">
             <span class="label">支线</span>
             <span class="value">{{ store.branchPlots }}</span>
           </div>
-          <div class="h-asset">
+          <div class="list-row">
             <span class="label">PTS</span>
             <span class="value">{{ store.mvuData?.主神货币?.奖励点 || 0 }}</span>
           </div>
-          <div class="h-asset">
+          <div class="list-row">
             <span class="label">XP</span>
             <span class="value">{{ store.mvuData?.主神货币?.经验值_XP || 0 }}</span>
           </div>
@@ -167,7 +259,19 @@ import { useDataStore } from '../store';
 
 const store = useDataStore();
 
-const showBloodlineDetails = ref(false);
+// 模态框状态管理 ('menu' | 'bloodline' | 'store' | 'inventory' | 'npc' | null)
+const activeModal = ref<string | null>(null);
+const expandedItem = ref<string | null>(null);
+
+const openModal = (type: string) => {
+  activeModal.value = type;
+  expandedItem.value = null;
+};
+
+const toggleItemDetail = (idx: number, prefix: string) => {
+  const key = `${prefix}-${idx}`;
+  expandedItem.value = expandedItem.value === key ? null : key;
+};
 
 // HP百分比
 const hpPercents = computed(() => {
@@ -346,73 +450,294 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
       }
     }
   }
+
+  .sys-menu-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: $text-dim;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-color: $accent-gold;
+      box-shadow: 0 0 8px rgba(234,179,8,0.2);
+    }
+  }
 }
 
-/* 血统详细信息悬浮弹窗 */
-.bloodline-popover {
+/* 全屏模态框与遮罩 */
+.modal-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 侧边滑出抽屉菜单 */
+.side-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+  background: #111116;
+  border-left: 1px solid $border-gold;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease forwards;
+
+  .drawer-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: $text-dim;
+    font-size: 1.5rem;
+    cursor: pointer;
+    &:hover { color: #fff; }
+  }
+
+  .drawer-title {
+    margin: 0 0 20px 0;
+    color: $accent-gold;
+    font-size: 1.1rem;
+    border-bottom: 1px dotted rgba(234,179,8,0.3);
+    padding-bottom: 8px;
+  }
+
+  .drawer-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .menu-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+
+      &:hover {
+        background: rgba(234,179,8,0.1);
+        border-color: $accent-gold;
+        box-shadow: $glow-shadow;
+      }
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* 居中内容模态框 */
+.content-modal {
+  position: relative;
   background: #111116;
   border: 1px solid $border-gold;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.8), $glow-shadow;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9), $glow-shadow;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.3s ease forwards;
 
-  .pop-title {
-    margin: 0 0 8px 0;
-    color: #fff;
-    font-size: 1rem;
-    border-bottom: 1px dotted rgba(234, 179, 8, 0.3);
-    padding-bottom: 4px;
-
-    .pop-level {
-      color: $accent-gold;
-      font-size: 0.85rem;
-      font-weight: normal;
-    }
+  &.large-modal {
+    max-width: 500px;
   }
 
-  .pop-desc {
-    font-size: 0.85rem;
+  .modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
     color: $text-dim;
-    margin-bottom: 12px;
-    line-height: 1.4;
+    font-size: 1.5rem;
+    cursor: pointer;
+    &:hover { color: #ef4444; }
   }
 
-  .pop-section {
-    margin-bottom: 8px;
+  .modal-title {
+    margin: 0 0 16px 0;
+    color: #fff;
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(234, 179, 8, 0.3);
+    padding-bottom: 8px;
+  }
 
-    .pop-subtitle {
-      font-size: 0.8rem;
-      color: $accent-gold;
-      margin-bottom: 4px;
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    &::-webkit-scrollbar-thumb { background: rgba(234,179,8,0.3); border-radius: 3px; }
+    &::-webkit-scrollbar-thumb:hover { background: $accent-gold; }
+  }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 模态框内部共用样式 (血统、物品、NPC) */
+.pop-desc {
+  font-size: 0.85rem;
+  color: $text-dim;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.pop-section {
+  margin-bottom: 12px;
+
+  .pop-subtitle {
+    font-size: 0.85rem;
+    color: $accent-gold;
+    margin-bottom: 6px;
+  }
+
+  .pop-attr-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    .pop-attr-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: #fff;
+    }
+  }
+
+  .pop-trait-list {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 0.85rem;
+    color: $text-main;
+
+    li {
+      margin-bottom: 6px;
+      strong { color: #fff; }
+    }
+  }
+}
+
+/* 物品网格卡片 */
+.item-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .empty-hint {
+    text-align: center;
+    color: $text-dim;
+    padding: 20px;
+    font-style: italic;
+  }
+
+  .item-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(234,179,8,0.3);
     }
 
-    .pop-attr-grid {
+    .item-header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      justify-content: space-between;
+      margin-bottom: 4px;
 
-      .pop-attr-tag {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        color: #fff;
-      }
+      .item-name { color: #fff; font-weight: 500; font-size: 0.95rem; }
+      .item-price { color: $accent-gold; font-family: monospace; font-size: 0.9rem; }
+      .equip-badge { background: rgba(34,197,94,0.2); color: #22c55e; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
     }
 
-    .pop-trait-list {
-      margin: 0;
-      padding-left: 16px;
+    .item-meta {
       font-size: 0.8rem;
-      color: $text-main;
-
-      li {
-        margin-bottom: 4px;
-        strong { color: #fff; }
-      }
+      color: $text-dim;
     }
+
+    .item-detail-drawer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255,255,255,0.1);
+      font-size: 0.85rem;
+      color: $text-main;
+      line-height: 1.4;
+    }
+  }
+}
+
+/* NPC 列表 */
+.npc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .npc-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 12px;
+
+    .npc-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      .npc-name { color: #fff; font-weight: 500; }
+      .npc-level { font-size: 0.8rem; }
+      .npc-level.敌对 { color: #ef4444; }
+      .npc-level.不友善 { color: #f97316; }
+      .npc-level.友善 { color: #22c55e; }
+      .npc-level.崇敬 { color: #a855f7; }
+    }
+
+    .npc-favor-bar {
+      height: 4px;
+      background: #1a1a24;
+      border-radius: 2px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      .favor-fill { height: 100%; background: #ec4899; }
+    }
+
+    .npc-desc { font-size: 0.8rem; color: $text-dim; line-height: 1.3; }
   }
 }
 
