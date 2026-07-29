@@ -206,6 +206,47 @@ $(async () => {
           if (isProtagonist) toastr?.warning(`【系统警告】状态点数超标，角色强制昏迷！`);
         }
       }
+      // 6. 支线剧情自动进位 (三进一)
+      if (entity.主神货币 && typeof entity.主神货币.支线剧情 === 'string') {
+        const plotStr = entity.主神货币.支线剧情;
+        let s = 0, a = 0, b = 0, c = 0, d = 0;
+
+        // 提取现有的支线数量
+        const matchS = plotStr.match(/S[^\d]*(\d+)/i);
+        const matchA = plotStr.match(/A[^\d]*(\d+)/i);
+        const matchB = plotStr.match(/B[^\d]*(\d+)/i);
+        const matchC = plotStr.match(/C[^\d]*(\d+)/i);
+        const matchD = plotStr.match(/D[^\d]*(\d+)/i);
+
+        if (matchS) s = parseInt(matchS[1], 10);
+        if (matchA) a = parseInt(matchA[1], 10);
+        if (matchB) b = parseInt(matchB[1], 10);
+        if (matchC) c = parseInt(matchC[1], 10);
+        if (matchD) d = parseInt(matchD[1], 10);
+
+        // 全部折算为 D 级当做基数
+        let totalD = d + (c * 3) + (b * 9) + (a * 27) + (s * 81);
+
+        // 重新进位换算
+        const newS = Math.floor(totalD / 81);
+        totalD %= 81;
+        const newA = Math.floor(totalD / 27);
+        totalD %= 27;
+        const newB = Math.floor(totalD / 9);
+        totalD %= 9;
+        const newC = Math.floor(totalD / 3);
+        const newD = totalD % 3;
+
+        // 拼装标准字符串
+        const parts = [];
+        if (newS > 0) parts.push(`S×${newS}`);
+        if (newA > 0) parts.push(`A×${newA}`);
+        if (newB > 0) parts.push(`B×${newB}`);
+        if (newC > 0) parts.push(`C×${newC}`);
+        if (newD > 0) parts.push(`D×${newD}`);
+
+        entity.主神货币.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
+      }
     };
 
     // 1. 处理主角

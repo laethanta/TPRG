@@ -255,7 +255,18 @@ const VehicleSchema = ItemBaseSchema.extend({
 
 
 // ----------------------------------------------------------------------
-// 3. 实体模板 (ProtagonistSchema & NpcSchema)
+// 3. 货币体系 (Currency Schema)
+// ----------------------------------------------------------------------
+
+const CurrencySchema = z.object({
+  奖励点: z.coerce.number().prefault(0),
+  经验值_XP: z.coerce.number().prefault(0),
+  支线剧情: z.string().describe('当前拥有的支线剧情，例如：C×1 D×2 或 无').prefault('无')
+}).prefault({ 奖励点: 0, 经验值_XP: 0, 支线剧情: '无' });
+
+
+// ----------------------------------------------------------------------
+// 4. 实体模板 (ProtagonistSchema & NpcSchema)
 // ----------------------------------------------------------------------
 
 // 主角专属结构：详细年龄，完整资产库，包含负重系统
@@ -272,6 +283,7 @@ const ProtagonistSchema = z.object({
   属性面板: AttributesSchema,
   技能列表: SkillListSchema,
   特质与模板: TraitsAndTemplatesSchema,
+  主神货币: CurrencySchema,
   生理与状态: PhysiologyBaseSchema.extend({
     负重系统: EncumbranceSchema
   }).prefault({
@@ -290,8 +302,6 @@ const ProtagonistSchema = z.object({
 
 // NPC专属结构：简化年龄，简化物品库，强制包含详细社交关系
 const NpcSchema = z.object({
-  姓名: z.string().prefault('未命名NPC'),
-
   基本信息: z.object({
     身份: z.string().prefault('未知'),
     性别: z.string().prefault('未知'),
@@ -305,6 +315,7 @@ const NpcSchema = z.object({
   属性面板: AttributesSchema,
   技能列表: SkillListSchema,
   特质与模板: TraitsAndTemplatesSchema,
+  主神货币: CurrencySchema,
   生理与状态: PhysiologySchema,
 
   // NPC 物品与资产极简化：仅保留当前穿着和极少量的关键掉落/持有物
@@ -323,33 +334,14 @@ const NpcSchema = z.object({
 
 
 // ----------------------------------------------------------------------
-// 4. 世界记录与主神空间
+// 5. 世界记录与主神空间
 // ----------------------------------------------------------------------
 
 const QuestRewardSchema = z.object({
   奖励点: z.coerce.number().optional(),
   经验值_XP: z.coerce.number().optional(),
-  支线剧情: z.object({
-    S: z.coerce.number().prefault(0),
-    A: z.coerce.number().prefault(0),
-    B: z.coerce.number().prefault(0),
-    C: z.coerce.number().prefault(0),
-    D: z.coerce.number().prefault(0)
-  }).optional(),
+  支线剧情: z.string().describe('例如：C×1 D×2').optional(),
   其他奖励描述: z.string().prefault('')
-});
-
-const QuestPunishmentSchema = z.object({
-  扣除奖励点: z.coerce.number().optional(),
-  扣除支线剧情: z.object({
-    S: z.coerce.number().prefault(0),
-    A: z.coerce.number().prefault(0),
-    B: z.coerce.number().prefault(0),
-    C: z.coerce.number().prefault(0),
-    D: z.coerce.number().prefault(0)
-  }).optional(),
-  抹杀: z.boolean().prefault(false),
-  其他惩罚描述: z.string().prefault('')
 });
 
 const QuestSchema = z.object({
@@ -357,7 +349,7 @@ const QuestSchema = z.object({
   目标: z.string().prefault(''),
   时间限制: z.string().prefault('无'),
   成功奖励: QuestRewardSchema.optional(),
-  失败惩罚: QuestPunishmentSchema.optional(),
+  失败惩罚: z.string().describe('纯文本描述惩罚，如抹杀、扣除点数等').prefault('无'),
   当前状态: z.enum(['未触发', '进行中', '已完成', '已失败']).prefault('进行中')
 });
 
@@ -409,7 +401,7 @@ const WorldRecordSchema = z.object({
 
 
 // ----------------------------------------------------------------------
-// 5. 顶层 Schema 聚合
+// 6. 顶层 Schema 聚合
 // ----------------------------------------------------------------------
 
 export const Schema = z.object({
@@ -418,26 +410,10 @@ export const Schema = z.object({
     属性面板: {},
     技能列表: {},
     特质与模板: {},
+    主神货币: {},
     生理与状态: {},
     物品与资产: {},
   }),
-
-  // 货币体系 (仅主角或小队共有)
-  主神货币: z
-    .object({
-      奖励点: z.coerce.number().prefault(0),
-      经验值_XP: z.coerce.number().prefault(0),
-      支线剧情: z
-        .object({
-          S级: z.coerce.number().prefault(0),
-          A级: z.coerce.number().prefault(0),
-          B级: z.coerce.number().prefault(0),
-          C级: z.coerce.number().prefault(0),
-          D级: z.coerce.number().prefault(0),
-        })
-        .prefault({ S级: 0, A级: 0, B级: 0, C级: 0, D级: 0 }),
-    })
-    .prefault({ 奖励点: 0, 经验值_XP: 0, 支线剧情: {} }),
 
   // 世界与副本记录
   世界记录: WorldRecordSchema,

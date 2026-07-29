@@ -155,11 +155,11 @@
           </div>
           <div class="list-row">
             <span class="label">PTS</span>
-            <span class="value">{{ store.mvuData?.主神货币?.奖励点 || 0 }}</span>
+            <span class="value">{{ store.protagonist?.主神货币?.奖励点 || 0 }}</span>
           </div>
           <div class="list-row">
             <span class="label">XP</span>
-            <span class="value">{{ store.mvuData?.主神货币?.经验值_XP || 0 }}</span>
+            <span class="value">{{ store.protagonist?.主神货币?.经验值_XP || 0 }}</span>
           </div>
         </div>
 

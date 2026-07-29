@@ -191,15 +191,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
   });
 
   const branchPlots = computed(() => {
-    const branches = data.value.主神货币?.支线剧情;
-    if (!branches) return '';
-    const parts = [];
-    if (branches['S级'] > 0) parts.push(`S×${branches['S级']}`);
-    if (branches['A级'] > 0) parts.push(`A×${branches['A级']}`);
-    if (branches['B级'] > 0) parts.push(`B×${branches['B级']}`);
-    if (branches['C级'] > 0) parts.push(`C×${branches['C级']}`);
-    if (branches['D级'] > 0) parts.push(`D×${branches['D级']}`);
-    return parts.length > 0 ? parts.join(' ') : '无';
+    return protagonist.value.主神货币?.支线剧情 || '无';
   });
 
   // 4.7 【状态与基因锁格式化】
