@@ -100,38 +100,29 @@
           "properties": {
             "生命状态": {
               "$ref": "#/$defs/__schema9"
-              "$ref": "#/$defs/__schema9"
             },
             "当前意志力": {
-              "$ref": "#/$defs/__schema10"
               "$ref": "#/$defs/__schema10"
             },
             "意志力上限缓存": {
               "$ref": "#/$defs/__schema11"
-              "$ref": "#/$defs/__schema11"
             },
             "能量池": {
-              "$ref": "#/$defs/__schema12"
               "$ref": "#/$defs/__schema12"
             },
             "不良状态点数": {
               "$ref": "#/$defs/__schema13"
-              "$ref": "#/$defs/__schema13"
             },
             "固有状态": {
-              "$ref": "#/$defs/__schema14"
               "$ref": "#/$defs/__schema14"
             },
             "增益状态": {
               "$ref": "#/$defs/__schema15"
-              "$ref": "#/$defs/__schema15"
             },
             "基因锁": {
               "$ref": "#/$defs/__schema17"
-              "$ref": "#/$defs/__schema17"
             },
             "衍生属性速查": {
-              "$ref": "#/$defs/__schema18"
               "$ref": "#/$defs/__schema18"
             },
             "负重系统": {
@@ -189,7 +180,6 @@
               },
               "additionalProperties": {
                 "$ref": "#/$defs/__schema19"
-                "$ref": "#/$defs/__schema19"
               }
             },
             "防具库": {
@@ -199,7 +189,6 @@
                 "type": "string"
               },
               "additionalProperties": {
-                "$ref": "#/$defs/__schema30"
                 "$ref": "#/$defs/__schema30"
               }
             },
@@ -214,42 +203,32 @@
                 "properties": {
                   "名称": {
                     "$ref": "#/$defs/__schema20"
-                    "$ref": "#/$defs/__schema20"
                   },
                   "本质": {
-                    "$ref": "#/$defs/__schema21"
                     "$ref": "#/$defs/__schema21"
                   },
                   "分类": {
                     "$ref": "#/$defs/__schema22"
-                    "$ref": "#/$defs/__schema22"
                   },
                   "前提": {
-                    "$ref": "#/$defs/__schema23"
                     "$ref": "#/$defs/__schema23"
                   },
                   "体积": {
                     "$ref": "#/$defs/__schema24"
-                    "$ref": "#/$defs/__schema24"
                   },
                   "重量": {
-                    "$ref": "#/$defs/__schema25"
                     "$ref": "#/$defs/__schema25"
                   },
                   "价格": {
                     "$ref": "#/$defs/__schema26"
-                    "$ref": "#/$defs/__schema26"
                   },
                   "描述": {
-                    "$ref": "#/$defs/__schema27"
                     "$ref": "#/$defs/__schema27"
                   },
                   "数量": {
                     "$ref": "#/$defs/__schema28"
-                    "$ref": "#/$defs/__schema28"
                   },
                   "已装备": {
-                    "$ref": "#/$defs/__schema29"
                     "$ref": "#/$defs/__schema29"
                   },
                   "关键词": {
@@ -280,42 +259,32 @@
                 "properties": {
                   "名称": {
                     "$ref": "#/$defs/__schema20"
-                    "$ref": "#/$defs/__schema20"
                   },
                   "本质": {
-                    "$ref": "#/$defs/__schema21"
                     "$ref": "#/$defs/__schema21"
                   },
                   "分类": {
                     "$ref": "#/$defs/__schema22"
-                    "$ref": "#/$defs/__schema22"
                   },
                   "前提": {
-                    "$ref": "#/$defs/__schema23"
                     "$ref": "#/$defs/__schema23"
                   },
                   "体积": {
                     "$ref": "#/$defs/__schema24"
-                    "$ref": "#/$defs/__schema24"
                   },
                   "重量": {
-                    "$ref": "#/$defs/__schema25"
                     "$ref": "#/$defs/__schema25"
                   },
                   "价格": {
                     "$ref": "#/$defs/__schema26"
-                    "$ref": "#/$defs/__schema26"
                   },
                   "描述": {
-                    "$ref": "#/$defs/__schema27"
                     "$ref": "#/$defs/__schema27"
                   },
                   "数量": {
                     "$ref": "#/$defs/__schema28"
-                    "$ref": "#/$defs/__schema28"
                   },
                   "已装备": {
-                    "$ref": "#/$defs/__schema29"
                     "$ref": "#/$defs/__schema29"
                   },
                   "空间体积上限": {
@@ -326,7 +295,6 @@
                     "default": [],
                     "type": "array",
                     "items": {
-                      "$ref": "#/$defs/__schema31"
                       "$ref": "#/$defs/__schema31"
                     },
                     "description": "记录内部存放的物品键名，内部物品不计入负重"
@@ -354,10 +322,8 @@
                 "anyOf": [
                   {
                     "$ref": "#/$defs/__schema32"
-                    "$ref": "#/$defs/__schema32"
                   },
                   {
-                    "$ref": "#/$defs/__schema33"
                     "$ref": "#/$defs/__schema33"
                   }
                 ]
@@ -374,38 +340,29 @@
                 "properties": {
                   "名称": {
                     "$ref": "#/$defs/__schema20"
-                    "$ref": "#/$defs/__schema20"
                   },
                   "本质": {
-                    "$ref": "#/$defs/__schema21"
                     "$ref": "#/$defs/__schema21"
                   },
                   "分类": {
                     "$ref": "#/$defs/__schema22"
-                    "$ref": "#/$defs/__schema22"
                   },
                   "前提": {
-                    "$ref": "#/$defs/__schema23"
                     "$ref": "#/$defs/__schema23"
                   },
                   "体积": {
                     "$ref": "#/$defs/__schema24"
-                    "$ref": "#/$defs/__schema24"
                   },
                   "重量": {
-                    "$ref": "#/$defs/__schema25"
                     "$ref": "#/$defs/__schema25"
                   },
                   "价格": {
                     "$ref": "#/$defs/__schema26"
-                    "$ref": "#/$defs/__schema26"
                   },
                   "描述": {
                     "$ref": "#/$defs/__schema27"
-                    "$ref": "#/$defs/__schema27"
                   },
                   "数量": {
-                    "$ref": "#/$defs/__schema28"
                     "$ref": "#/$defs/__schema28"
                   },
                   "载具类型": {
@@ -580,8 +537,6 @@
                   "支线剧情": {
                     "type": "string",
                     "description": "例如：C×1 D×2"
-                    "type": "string",
-                    "description": "例如：C×1 D×2"
                   },
                   "其他奖励描述": {
                     "default": "",
@@ -590,9 +545,6 @@
                 }
               },
               "失败惩罚": {
-                "default": "无",
-                "type": "string",
-                "description": "纯文本描述惩罚，如抹杀、扣除点数等"
                 "default": "无",
                 "type": "string",
                 "description": "纯文本描述惩罚，如抹杀、扣除点数等"
@@ -614,7 +566,6 @@
           "default": [],
           "type": "array",
           "items": {
-            "$ref": "#/$defs/__schema34"
             "$ref": "#/$defs/__schema34"
           },
           "description": "记录场景临时效应如高辐射、暴风雨等"
@@ -643,7 +594,6 @@
               "type": "array",
               "items": {
                 "$ref": "#/$defs/__schema35"
-                "$ref": "#/$defs/__schema35"
               },
               "description": "首位应为上一场经历的世界"
             },
@@ -669,14 +619,12 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/$defs/__schema19"
-                    "$ref": "#/$defs/__schema19"
                   }
                 },
                 "防具列表": {
                   "default": [],
                   "type": "array",
                   "items": {
-                    "$ref": "#/$defs/__schema30"
                     "$ref": "#/$defs/__schema30"
                   }
                 },
@@ -694,10 +642,8 @@
                     "anyOf": [
                       {
                         "$ref": "#/$defs/__schema32"
-                        "$ref": "#/$defs/__schema32"
                       },
                       {
-                        "$ref": "#/$defs/__schema33"
                         "$ref": "#/$defs/__schema33"
                       }
                     ]
@@ -789,38 +735,29 @@
             "properties": {
               "生命状态": {
                 "$ref": "#/$defs/__schema9"
-                "$ref": "#/$defs/__schema9"
               },
               "当前意志力": {
-                "$ref": "#/$defs/__schema10"
                 "$ref": "#/$defs/__schema10"
               },
               "意志力上限缓存": {
                 "$ref": "#/$defs/__schema11"
-                "$ref": "#/$defs/__schema11"
               },
               "能量池": {
-                "$ref": "#/$defs/__schema12"
                 "$ref": "#/$defs/__schema12"
               },
               "不良状态点数": {
                 "$ref": "#/$defs/__schema13"
-                "$ref": "#/$defs/__schema13"
               },
               "固有状态": {
-                "$ref": "#/$defs/__schema14"
                 "$ref": "#/$defs/__schema14"
               },
               "增益状态": {
                 "$ref": "#/$defs/__schema15"
-                "$ref": "#/$defs/__schema15"
               },
               "基因锁": {
                 "$ref": "#/$defs/__schema17"
-                "$ref": "#/$defs/__schema17"
               },
               "衍生属性速查": {
-                "$ref": "#/$defs/__schema18"
                 "$ref": "#/$defs/__schema18"
               }
             }
@@ -833,17 +770,14 @@
             "properties": {
               "当前武器": {
                 "$ref": "#/$defs/__schema19"
-                "$ref": "#/$defs/__schema19"
               },
               "当前防具": {
-                "$ref": "#/$defs/__schema30"
                 "$ref": "#/$defs/__schema30"
               },
               "携带物品": {
                 "default": [],
                 "type": "array",
                 "items": {
-                  "$ref": "#/$defs/__schema36"
                   "$ref": "#/$defs/__schema36"
                 },
                 "description": "无需详细数据的普通物品"
@@ -1293,9 +1227,9 @@
       "default": {
         "上限缓存": 5,
         "完好": 5,
-        "冲击_B": 0,
-        "严重_L": 0,
-        "恶性_A": 0
+        "冲击B": 0,
+        "严重L": 0,
+        "恶性A": 0
       },
       "type": "object",
       "properties": {
@@ -1308,32 +1242,29 @@
           "default": 5,
           "type": "number"
         },
-        "冲击_B": {
+        "冲击B": {
           "default": 0,
           "type": "number"
         },
-        "严重_L": {
+        "严重L": {
           "default": 0,
           "type": "number"
         },
-        "恶性_A": {
+        "恶性A": {
           "default": 0,
           "type": "number"
         }
       }
     },
     "__schema10": {
-    "__schema10": {
       "default": 1,
       "type": "number"
     },
-    "__schema11": {
     "__schema11": {
       "default": 1,
       "type": "number",
       "description": "用于前端展示，实际值由脚本计算"
     },
-    "__schema12": {
     "__schema12": {
       "default": {
         "名称": "无",
@@ -1363,7 +1294,6 @@
       }
     },
     "__schema13": {
-    "__schema13": {
       "default": {},
       "type": "object",
       "propertyNames": {
@@ -1375,7 +1305,6 @@
       }
     },
     "__schema14": {
-    "__schema14": {
       "default": [],
       "type": "array",
       "items": {
@@ -1383,30 +1312,20 @@
       }
     },
     "__schema15": {
-    "__schema15": {
       "default": [],
       "type": "array",
       "items": {
-        "$ref": "#/$defs/__schema16"
         "$ref": "#/$defs/__schema16"
       },
       "description": "记录临时增益，如加速、隐形等"
     },
     "__schema16": {
-    "__schema16": {
       "type": "string"
     },
     "__schema17": {
-    "__schema17": {
       "default": {
         "最高已开启阶数": 0,
-        "各阶熟练度": [
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
+        "熟练度": 0,
         "当前处于开启阶数": 0,
         "反噬记录": {}
       },
@@ -1416,18 +1335,9 @@
           "default": 0,
           "type": "number"
         },
-        "各阶熟练度": {
-          "default": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "type": "array",
-          "items": {
-            "type": "number"
-          }
+        "熟练度": {
+          "default": 0,
+          "type": "number"
         },
         "当前处于开启阶数": {
           "default": 0,
@@ -1443,7 +1353,6 @@
         }
       }
     },
-    "__schema18": {
     "__schema18": {
       "default": {
         "最大HP": 5,
@@ -1497,47 +1406,36 @@
       }
     },
     "__schema19": {
-    "__schema19": {
       "type": "object",
       "properties": {
         "名称": {
           "$ref": "#/$defs/__schema20"
-          "$ref": "#/$defs/__schema20"
         },
         "本质": {
-          "$ref": "#/$defs/__schema21"
           "$ref": "#/$defs/__schema21"
         },
         "分类": {
           "$ref": "#/$defs/__schema22"
-          "$ref": "#/$defs/__schema22"
         },
         "前提": {
-          "$ref": "#/$defs/__schema23"
           "$ref": "#/$defs/__schema23"
         },
         "体积": {
           "$ref": "#/$defs/__schema24"
-          "$ref": "#/$defs/__schema24"
         },
         "重量": {
-          "$ref": "#/$defs/__schema25"
           "$ref": "#/$defs/__schema25"
         },
         "价格": {
           "$ref": "#/$defs/__schema26"
-          "$ref": "#/$defs/__schema26"
         },
         "描述": {
-          "$ref": "#/$defs/__schema27"
           "$ref": "#/$defs/__schema27"
         },
         "数量": {
           "$ref": "#/$defs/__schema28"
-          "$ref": "#/$defs/__schema28"
         },
         "已装备": {
-          "$ref": "#/$defs/__schema29"
           "$ref": "#/$defs/__schema29"
         },
         "武器伤害": {
@@ -1561,96 +1459,75 @@
       ]
     },
     "__schema20": {
-    "__schema20": {
       "type": "string"
     },
-    "__schema21": {
     "__schema21": {
       "default": "自然本质",
       "type": "string"
     },
     "__schema22": {
-    "__schema22": {
       "default": "普通物品",
       "type": "string"
     },
-    "__schema23": {
     "__schema23": {
       "default": "无",
       "type": "string"
     },
     "__schema24": {
-    "__schema24": {
       "default": 1,
       "type": "number"
     },
-    "__schema25": {
     "__schema25": {
       "default": "1公斤",
       "type": "string"
     },
     "__schema26": {
-    "__schema26": {
       "default": "",
       "type": "string"
     },
     "__schema27": {
-    "__schema27": {
       "default": "",
       "type": "string"
     },
-    "__schema28": {
     "__schema28": {
       "default": 1,
       "type": "number"
     },
     "__schema29": {
-    "__schema29": {
       "default": false,
       "type": "boolean"
     },
-    "__schema30": {
     "__schema30": {
       "type": "object",
       "properties": {
         "名称": {
           "$ref": "#/$defs/__schema20"
-          "$ref": "#/$defs/__schema20"
         },
         "本质": {
-          "$ref": "#/$defs/__schema21"
           "$ref": "#/$defs/__schema21"
         },
         "分类": {
           "$ref": "#/$defs/__schema22"
-          "$ref": "#/$defs/__schema22"
         },
         "前提": {
-          "$ref": "#/$defs/__schema23"
           "$ref": "#/$defs/__schema23"
         },
         "体积": {
           "$ref": "#/$defs/__schema24"
-          "$ref": "#/$defs/__schema24"
         },
         "重量": {
-          "$ref": "#/$defs/__schema25"
           "$ref": "#/$defs/__schema25"
         },
         "价格": {
           "$ref": "#/$defs/__schema26"
-          "$ref": "#/$defs/__schema26"
         },
         "描述": {
-          "$ref": "#/$defs/__schema27"
           "$ref": "#/$defs/__schema27"
         },
         "数量": {
           "$ref": "#/$defs/__schema28"
-          "$ref": "#/$defs/__schema28"
         },
         "已装备": {
-          "$ref": "#/$defs/__schema29"
           "$ref": "#/$defs/__schema29"
         },
         "盔甲防御": {
@@ -1677,47 +1554,36 @@
       ]
     },
     "__schema31": {
-    "__schema31": {
       "type": "string"
     },
-    "__schema32": {
     "__schema32": {
       "type": "object",
       "properties": {
         "名称": {
           "$ref": "#/$defs/__schema20"
-          "$ref": "#/$defs/__schema20"
         },
         "本质": {
-          "$ref": "#/$defs/__schema21"
           "$ref": "#/$defs/__schema21"
         },
         "分类": {
           "$ref": "#/$defs/__schema22"
-          "$ref": "#/$defs/__schema22"
         },
         "前提": {
-          "$ref": "#/$defs/__schema23"
           "$ref": "#/$defs/__schema23"
         },
         "体积": {
           "$ref": "#/$defs/__schema24"
-          "$ref": "#/$defs/__schema24"
         },
         "重量": {
-          "$ref": "#/$defs/__schema25"
           "$ref": "#/$defs/__schema25"
         },
         "价格": {
           "$ref": "#/$defs/__schema26"
-          "$ref": "#/$defs/__schema26"
         },
         "描述": {
           "$ref": "#/$defs/__schema27"
-          "$ref": "#/$defs/__schema27"
         },
         "数量": {
-          "$ref": "#/$defs/__schema28"
           "$ref": "#/$defs/__schema28"
         },
         "效果": {
@@ -1730,43 +1596,33 @@
       ]
     },
     "__schema33": {
-    "__schema33": {
       "type": "object",
       "properties": {
         "名称": {
           "$ref": "#/$defs/__schema20"
-          "$ref": "#/$defs/__schema20"
         },
         "本质": {
-          "$ref": "#/$defs/__schema21"
           "$ref": "#/$defs/__schema21"
         },
         "分类": {
           "$ref": "#/$defs/__schema22"
-          "$ref": "#/$defs/__schema22"
         },
         "前提": {
-          "$ref": "#/$defs/__schema23"
           "$ref": "#/$defs/__schema23"
         },
         "体积": {
           "$ref": "#/$defs/__schema24"
-          "$ref": "#/$defs/__schema24"
         },
         "重量": {
-          "$ref": "#/$defs/__schema25"
           "$ref": "#/$defs/__schema25"
         },
         "价格": {
           "$ref": "#/$defs/__schema26"
-          "$ref": "#/$defs/__schema26"
         },
         "描述": {
           "$ref": "#/$defs/__schema27"
-          "$ref": "#/$defs/__schema27"
         },
         "数量": {
-          "$ref": "#/$defs/__schema28"
           "$ref": "#/$defs/__schema28"
         }
       },
@@ -1778,9 +1634,6 @@
       "type": "string"
     },
     "__schema35": {
-      "type": "string"
-    },
-    "__schema36": {
       "type": "string"
     },
     "__schema36": {

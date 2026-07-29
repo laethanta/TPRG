@@ -55,10 +55,10 @@ const SkillListSchema = z.record(z.string(), SkillSchema).prefault({});
 const HealthPoolsSchema = z.object({
   上限缓存: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(5),
   完好: z.coerce.number().prefault(5),
-  冲击_B: z.coerce.number().prefault(0),
-  严重_L: z.coerce.number().prefault(0),
-  恶性_A: z.coerce.number().prefault(0)
-}).prefault({ 上限缓存: 5, 完好: 5, 冲击_B: 0, 严重_L: 0, 恶性_A: 0 });
+  冲击B: z.coerce.number().prefault(0),
+  严重L: z.coerce.number().prefault(0),
+  恶性A: z.coerce.number().prefault(0)
+}).prefault({ 上限缓存: 5, 完好: 5, 冲击B: 0, 严重L: 0, 恶性A: 0 });
 
 // 不良状态与增益状态
 const StatusPointsSchema = z.record(z.string(), z.coerce.number().prefault(0)).prefault({});
@@ -75,10 +75,10 @@ const EnergyPoolSchema = z.object({
 // 基因锁记录
 const GeneLockSchema = z.object({
   最高已开启阶数: z.coerce.number().transform(v => _.clamp(v, 0, 5)).prefault(0),
-  各阶熟练度: z.array(z.coerce.number()).prefault([0, 0, 0, 0, 0]), // 一到五阶的熟练度累计
+  熟练度: z.coerce.number().prefault(0),
   当前处于开启阶数: z.coerce.number().transform(v => _.clamp(v, 0, 5)).prefault(0),
   反噬记录: z.record(z.string(), z.any()).prefault({}) // 记录如开启轮数等信息
-}).prefault({ 最高已开启阶数: 0, 各阶熟练度: [0, 0, 0, 0, 0], 当前处于开启阶数: 0, 反噬记录: {} });
+}).prefault({ 最高已开启阶数: 0, 熟练度: 0, 当前处于开启阶数: 0, 反噬记录: {} });
 
 // 负重状态与体积 (主要为主角准备，供脚本计算后缓存)
 const EncumbranceSchema = z.object({
