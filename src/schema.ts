@@ -138,7 +138,7 @@ const FeatSchema = z.object({
   前提: z.string().prefault('无'),
   描述: z.string().prefault(''),
   特性列表: z.array(TraitSchema).prefault([]),
-  特殊: z.string().prefault('')
+  关键词: z.string().prefault('')
 });
 
 // 模板类(血统/改造/瞳术/修炼体系/典籍)
@@ -154,7 +154,7 @@ const TemplateSchema = z.object({
   能量池说明: z.string().prefault('无'),
   技能树说明: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([]),
-  特殊: z.string().prefault('')
+  关键词: z.string().prefault('')
 });
 
 // 技艺与法术
@@ -206,7 +206,7 @@ const EquipmentBaseSchema = ItemBaseSchema.extend({
 // 武器
 const WeaponSchema = EquipmentBaseSchema.extend({
   武器伤害: z.string().prefault('0L'), // 如 4L, 2B
-  特殊属性: z.string().prefault('无'), // 破甲等
+  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
@@ -214,13 +214,13 @@ const WeaponSchema = EquipmentBaseSchema.extend({
 const ArmorSchema = EquipmentBaseSchema.extend({
   盔甲防御: z.coerce.number().prefault(0),
   盾牌防御: z.coerce.number().optional(),
-  特殊属性: z.string().prefault('无'),
+  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
 // 饰品结构
 const AccessorySchema = EquipmentBaseSchema.extend({
-  特殊属性: z.string().prefault('无'),
+  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
@@ -255,14 +255,14 @@ const VehicleSchema = ItemBaseSchema.extend({
 
 
 // ----------------------------------------------------------------------
-// 3. 货币体系 (Currency Schema)
+// 3. 资源体系 (Resource Schema)
 // ----------------------------------------------------------------------
 
-const CurrencySchema = z.object({
+const ResourceSchema = z.object({
   奖励点: z.coerce.number().prefault(0),
-  经验值_XP: z.coerce.number().prefault(0),
+  经验值: z.coerce.number().prefault(0),
   支线剧情: z.string().describe('当前拥有的支线剧情，例如：C×1 D×2 或 无').prefault('无')
-}).prefault({ 奖励点: 0, 经验值_XP: 0, 支线剧情: '无' });
+}).prefault({ 奖励点: 0, 经验值: 0, 支线剧情: '无' });
 
 
 // ----------------------------------------------------------------------
@@ -283,7 +283,7 @@ const ProtagonistSchema = z.object({
   属性面板: AttributesSchema,
   技能列表: SkillListSchema,
   特质与模板: TraitsAndTemplatesSchema,
-  主神货币: CurrencySchema,
+  资源: ResourceSchema,
   生理与状态: PhysiologyBaseSchema.extend({
     负重系统: EncumbranceSchema
   }).prefault({
@@ -315,7 +315,7 @@ const NpcSchema = z.object({
   属性面板: AttributesSchema,
   技能列表: SkillListSchema,
   特质与模板: TraitsAndTemplatesSchema,
-  主神货币: CurrencySchema,
+  资源: ResourceSchema,
   生理与状态: PhysiologySchema,
 
   // NPC 物品与资产极简化：仅保留当前穿着和极少量的关键掉落/持有物
@@ -335,11 +335,12 @@ const NpcSchema = z.object({
 
 // ----------------------------------------------------------------------
 // 5. 世界记录与主神空间
+// 5. 世界记录与主神空间
 // ----------------------------------------------------------------------
 
 const QuestRewardSchema = z.object({
   奖励点: z.coerce.number().optional(),
-  经验值_XP: z.coerce.number().optional(),
+  经验值: z.coerce.number().optional(),
   支线剧情: z.string().describe('例如：C×1 D×2').optional(),
   其他奖励描述: z.string().prefault('')
 });
@@ -349,6 +350,7 @@ const QuestSchema = z.object({
   目标: z.string().prefault(''),
   时间限制: z.string().prefault('无'),
   成功奖励: QuestRewardSchema.optional(),
+  失败惩罚: z.string().describe('纯文本描述惩罚，如抹杀、扣除点数等').prefault('无'),
   失败惩罚: z.string().describe('纯文本描述惩罚，如抹杀、扣除点数等').prefault('无'),
   当前状态: z.enum(['未触发', '进行中', '已完成', '已失败']).prefault('进行中')
 });
@@ -402,6 +404,7 @@ const WorldRecordSchema = z.object({
 
 // ----------------------------------------------------------------------
 // 6. 顶层 Schema 聚合
+// 6. 顶层 Schema 聚合
 // ----------------------------------------------------------------------
 
 export const Schema = z.object({
@@ -410,7 +413,7 @@ export const Schema = z.object({
     属性面板: {},
     技能列表: {},
     特质与模板: {},
-    主神货币: {},
+    资源: {},
     生理与状态: {},
     物品与资产: {},
   }),
