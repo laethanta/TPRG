@@ -127,7 +127,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
   // 4. 【负重状态计算】
   const encumbrance = computed(() => {
     // 实际项目中应遍历所有未在容器中的物品
-    const totalWeightKg = protagonist.value.生理与状态.负重系统.当前负重_kg || 0;
+    const totalWeightKg = protagonist.value.生理与状态.负重系统.当前负重 || 0;
 
     const strength = currentAttributes.value['力量'].value;
     const legStrength = currentAttributes.value['力量'].legendary;

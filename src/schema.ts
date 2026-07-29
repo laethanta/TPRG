@@ -83,10 +83,10 @@ const GeneLockSchema = z.object({
 // 负重状态与体积 (主要为主角准备，供脚本计算后缓存)
 const EncumbranceSchema = z.object({
   体积: z.coerce.number().describe('由血统/专长等计算').prefault(5),
-  当前负重_kg: z.coerce.number().prefault(0),
-  负重上限缓存_kg: z.coerce.number().prefault(10),
+  当前负重: z.coerce.number().prefault(0),
+  负重上限缓存: z.coerce.number().prefault(10),
   当前状态: z.enum(['轻度', '中度', '重度', '压垮']).prefault('轻度')
-}).prefault({ 体积: 5, 当前负重_kg: 0, 负重上限缓存_kg: 10, 当前状态: '轻度' });
+}).prefault({ 体积: 5, 当前负重: 0, 负重上限缓存: 10, 当前状态: '轻度' });
 
 
 const DerivedStatsSchema = z.object({
@@ -387,12 +387,12 @@ const WorldRecordSchema = z.object({
 
   主神空间档案: z.object({
     恐怖片经历计数: z.coerce.number().prefault(0),
-    距离下次传送_天: z.coerce.number().prefault(10),
+    距离下次传送天数: z.coerce.number().prefault(10),
     已解锁世界列表: z.array(z.string()).describe('首位应为上一场经历的世界').prefault([]),
     私人房间状态: z.string().prefault('10平方米白墙空房间'),
     培元固本次数: z.coerce.number().transform(v => _.clamp(v, 0, 3)).prefault(0),
     主神商店当前列表: GodSpaceStoreSchema
-  }).prefault({ 恐怖片经历计数: 0, 距离下次传送_天: 10, 已解锁世界列表: [], 私人房间状态: '10平方米白墙空房间', 培元固本次数: 0, 主神商店当前列表: {} })
+  }).prefault({ 恐怖片经历计数: 0, 距离下次传送天数: 10, 已解锁世界列表: [], 私人房间状态: '10平方米白墙空房间', 培元固本次数: 0, 主神商店当前列表: {} })
 }).prefault({
   当前影片信息: {},
   团战状态: {},
@@ -404,10 +404,12 @@ const WorldRecordSchema = z.object({
 
 // ----------------------------------------------------------------------
 // 6. 顶层 Schema 聚合
-// 6. 顶层 Schema 聚合
 // ----------------------------------------------------------------------
 
 export const Schema = z.object({
+  // 世界与副本记录
+  世界记录: WorldRecordSchema,
+
   // 主角数据
   主角: ProtagonistSchema.prefault({
     属性面板: {},
@@ -417,9 +419,6 @@ export const Schema = z.object({
     生理与状态: {},
     物品与资产: {},
   }),
-
-  // 世界与副本记录
-  世界记录: WorldRecordSchema,
 
   // NPC与队友记录表
   人物关系记录: z.record(z.string().describe('NPC或队友姓名'), NpcSchema).prefault({}),

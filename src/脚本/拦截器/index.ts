@@ -103,7 +103,7 @@ $(async () => {
         });
 
         if (entity.生理与状态.负重系统) {
-          entity.生理与状态.负重系统.当前负重_kg = totalWeight;
+          entity.生理与状态.负重系统.当前负重 = totalWeight;
         }
 
         if (inventory.当前防具 && inventory.当前防具.盔甲防御) {
@@ -137,9 +137,9 @@ $(async () => {
       }
 
       // 4. 生命值 B/L/A 满溢转化逻辑
-      let b = hp.冲击_B || 0;
-      let l = hp.严重_L || 0;
-      let a = hp.恶性_A || 0;
+      let b = hp.冲击B || 0;
+      let l = hp.严重L || 0;
+      let a = hp.恶性A || 0;
 
       let overflow = (b + l + a) - MAX_HP;
 
@@ -158,9 +158,9 @@ $(async () => {
         }
       }
 
-      hp.冲击_B = b;
-      hp.严重_L = l;
-      hp.恶性_A = a;
+      hp.冲击B = b;
+      hp.严重L = l;
+      hp.恶性A = a;
       hp.完好 = Math.max(0, MAX_HP - (b + l + a));
 
       // 5. 0属性及阈值惩罚判定
@@ -207,8 +207,8 @@ $(async () => {
         }
       }
       // 6. 支线剧情自动进位 (三进一)
-      if (entity.主神货币 && typeof entity.主神货币.支线剧情 === 'string') {
-        const plotStr = entity.主神货币.支线剧情;
+      if (entity.资源 && typeof entity.资源?.支线剧情 === 'string') {
+        const plotStr = entity.资源?.支线剧情;
         let s = 0, a = 0, b = 0, c = 0, d = 0;
 
         // 提取现有的支线数量
@@ -245,7 +245,7 @@ $(async () => {
         if (newC > 0) parts.push(`C×${newC}`);
         if (newD > 0) parts.push(`D×${newD}`);
 
-        entity.主神货币.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
+        entity.资源?.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
       }
     };
 
