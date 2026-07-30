@@ -339,7 +339,7 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
 
 .sys-menu-btn {
     position: absolute;
-    top: 16px;
+    top: 8px;
     right: 16px;
     z-index: 10;
     background: transparent;
