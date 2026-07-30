@@ -112,7 +112,7 @@
 
     <!-- TODO: 未来计划加入UI分辨率/缩放比例的自定义设定 -->
     <button class="sys-menu-btn" @click="openModal('menu')" title="系统菜单">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -337,6 +337,31 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
   backdrop-filter: blur(12px);
 }
 
+.sys-menu-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: $text-dim;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-color: $accent-gold;
+      box-shadow: 0 0 8px rgba(234,179,8,0.2);
+    }
+  }
+
 .panel-layout {
   display: flex;
   gap: 32px;
@@ -451,30 +476,7 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
     }
   }
 
-  .sys-menu-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 10;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: $text-dim;
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
 
-    &:hover {
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      border-color: $accent-gold;
-      box-shadow: 0 0 8px rgba(234,179,8,0.2);
-    }
-  }
 }
 
 /* 全屏模态框与遮罩 */
