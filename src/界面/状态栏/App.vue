@@ -20,10 +20,10 @@
           <h4 class="modal-title">{{ store.bloodlineDetails?.名称 }} <span class="modal-level">[{{ store.bloodlineDetails?.强化等级 }}]</span></h4>
           <div class="modal-body scrollable">
             <div class="pop-desc">{{ store.bloodlineDetails?.描述 || '无描述' }}</div>
-            <div v-if="Object.keys(store.bloodlineDetails?.属性加成记录 || {}).length > 0" class="pop-section">
+            <div v-if="Object.keys(store.bloodlineDetails?.属性加成 || {}).length > 0" class="pop-section">
               <div class="pop-subtitle">属性加成</div>
               <div class="pop-attr-grid">
-                <span v-for="(val, key) in store.bloodlineDetails?.属性加成记录" :key="key" class="pop-attr-tag">
+                <span v-for="(val, key) in store.bloodlineDetails?.属性加成" :key="key" class="pop-attr-tag">
                   {{ key }}: +{{ val }}
                 </span>
               </div>
@@ -224,8 +224,8 @@
         <!-- 派生参数 -->
         <div class="derived-section">
           <div class="list-row">
-            <span class="label">总防御</span>
-            <span class="value">{{ store.derivedStats.总防御 }}</span>
+            <span class="label">防御</span>
+            <span class="value">{{ store.derivedStats.基础防御 }}</span>
           </div>
           <div class="list-row">
             <span class="label">先攻</span>
