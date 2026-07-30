@@ -10,7 +10,7 @@ $(async () => {
   if (typeof getVariables === 'function') {
     await waitUntil(() => {
       const vars = getVariables({ type: 'message' });
-      return vars && vars.stat_data && vars.stat_data.主角;
+      return vars && vars.stat_data && vars.stat_data.轮回者;
     });
   }
 

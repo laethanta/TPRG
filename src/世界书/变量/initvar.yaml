@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../../schema.json
-主角:
-  姓名: 主角
+轮回者:
+  姓名: 轮回者
   基本信息:
     身份: 轮回者
     性别: 未知

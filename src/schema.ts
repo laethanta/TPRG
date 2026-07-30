@@ -73,7 +73,7 @@ const GeneLockSchema = z.object({
   开启轮数: z.coerce.number().prefault(0)
 }).prefault({ 最高阶数: 0, 熟练度: 0, 开启状态: false, 开启轮数: 0 });
 
-// 负重状态与体积 (主要为主角准备，供脚本计算后缓存)
+// 负重状态与体积 (主要为轮回者准备，供脚本计算后缓存)
 const EncumbranceSchema = z.object({
   体积: z.coerce.number().describe('由血统/专长等计算').prefault(5),
   当前负重: z.coerce.number().prefault(0),
@@ -259,9 +259,9 @@ const ResourceSchema = z.object({
 // 4. 实体模板 (ProtagonistSchema & NpcSchema)
 // ----------------------------------------------------------------------
 
-// 主角专属结构：详细年龄，完整资产库，包含负重系统
+// 轮回者专属结构：详细年龄，完整资产库，包含负重系统
 const ProtagonistSchema = z.object({
-  姓名: z.string().prefault('主角'),
+  姓名: z.string().prefault('轮回者'),
 
   基本信息: z.object({
     身份: z.string().prefault('轮回者'),
@@ -315,7 +315,7 @@ const NpcSchema = z.object({
     携带物品: z.array(z.string()).describe('无需详细数据的普通物品').prefault([])
   }).prefault({ 携带物品: [] }),
 
-  // 关系记录为 NPC 必须记录的数据 (针对主角的态度)
+  // 关系记录为 NPC 必须记录的数据 (针对轮回者的态度)
   关系记录: z.object({
     好感度: z.coerce.number().transform(v => _.clamp(v, 0, 200)).prefault(70),
     印象简评: z.string().prefault('')
@@ -398,7 +398,7 @@ export const Schema = z.object({
   // 世界与副本记录
   世界记录: WorldRecordSchema,
 
-  // 主角数据
+  // 轮回者数据
   轮回者: ProtagonistSchema.prefault({
     属性面板: {},
     技能列表: {},

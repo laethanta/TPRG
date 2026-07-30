@@ -10,7 +10,7 @@ $(async () => {
   await waitGlobalInitialized('Mvu');
 
   const handleVariables = (variables: any, variables_before_update?: any) => {
-    // 抽出计算核心逻辑为一个函数，方便对主角和所有 NPC 循环复用
+    // 抽出计算核心逻辑为一个函数，方便对轮回者和所有 NPC 循环复用
     const processEntity = (entity: any, oldEntity: any, isProtagonist: boolean) => {
       if (!entity) return;
 
@@ -318,7 +318,7 @@ $(async () => {
     // 判断当前是否是 init 阶段
     const isInit = typeof variables_before_update !== 'object';
 
-    // 处理主角
+    // 处理轮回者
     const protagonist = _.get(variables, 'stat_data.轮回者');
     const oldProtagonist = !isInit ? _.get(variables_before_update, 'stat_data.轮回者') : undefined;
     processEntity(protagonist, oldProtagonist, true);

@@ -301,7 +301,7 @@
       "type": "object",
       "properties": {
         "姓名": {
-          "default": "主角",
+          "default": "轮回者",
           "type": "string"
         },
         "基本信息": {

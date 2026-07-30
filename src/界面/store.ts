@@ -24,8 +24,8 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
 
     for (const name of attrNames) {
       result[name] = {
-        value: Number(attrs[name]) || 1,
-        legendary: Number(attrs[`传奇${name}`]) || 0
+        value: Number((attrs as any)[name]) || 1,
+        legendary: Number((attrs as any)[`传奇${name}`]) || 0
       };
     }
     return result;
@@ -80,7 +80,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     const mainTemplate = templates[keys[0]];
     return {
       name: mainTemplate.名称 || keys[0],
-      level: mainTemplate.当前评级或层数 || '未知'
+      level: mainTemplate.强化等级 || '未知'
     };
   });
 
@@ -122,7 +122,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     return list;
   });
 
-  // 7. 【主角持有的物品列表】
+  // 7. 【轮回者持有的物品列表】
   const inventoryItems = computed(() => {
     const list: any[] = [];
     const inv = protagonist.value.物品与资产;
