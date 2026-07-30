@@ -13,7 +13,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
   // 因为底层 mvuStore 的核心数据挂载在 .data 上
   const data = computed(() => mvuStore.data);
 
-  const protagonist = computed(() => data.value.主角);
+  const protagonist = computed(() => data.value.轮回者);
 
   // 1. 【动态当前属性计算 & 传奇属性】
   // 现在拦截器已经把最终的计算结果写到了属性面板上，所以这里只需要简单读取即可。
@@ -85,7 +85,7 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
   });
 
   const branchPlots = computed(() => {
-    return protagonist.value.主神货币?.支线剧情 || '无';
+    return protagonist.value.资源?.支线剧情 || '无';
   });
 
   // 4.7 【状态与基因锁格式化】
@@ -114,10 +114,10 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     const list: any[] = [];
     const s = data.value.世界记录?.主神空间档案?.主神商店当前列表;
     if (s) {
-      if (s.武器列表) list.push(...s.武器列表);
-      if (s.防具列表) list.push(...s.防具列表);
-      if (s.强化模板列表) list.push(...s.强化模板列表);
-      if (s.物品与消耗品列表) list.push(...s.物品与消耗品列表);
+      if (s.科幻类兑换) list.push(...s.科幻类兑换);
+      if (s.魔法传说类兑换) list.push(...s.魔法传说类兑换);
+      if (s.血统及技能) list.push(...s.血统及技能);
+      if (s.材料及药品) list.push(...s.材料及药品);
     }
     return list;
   });
@@ -127,12 +127,12 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     const list: any[] = [];
     const inv = protagonist.value.物品与资产;
     if (inv) {
-      Object.values(inv.武器库 || {}).forEach(i => list.push({ ...i, _category: '武器' }));
-      Object.values(inv.防具库 || {}).forEach(i => list.push({ ...i, _category: '防具' }));
-      Object.values(inv.饰品库 || {}).forEach(i => list.push({ ...i, _category: '饰品' }));
-      Object.values(inv.消耗品与杂物 || {}).forEach(i => list.push({ ...i, _category: '杂物' }));
-      Object.values(inv.容器库 || {}).forEach(i => list.push({ ...i, _category: '容器' }));
-      Object.values(inv.载具库 || {}).forEach(i => list.push({ ...i, _category: '载具' }));
+      Object.values(inv.武器库 || {}).forEach((i: any) => list.push({ ...i, _category: '武器' }));
+      Object.values(inv.防具库 || {}).forEach((i: any) => list.push({ ...i, _category: '防具' }));
+      Object.values(inv.饰品库 || {}).forEach((i: any) => list.push({ ...i, _category: '饰品' }));
+      Object.values(inv.空间道具库 || {}).forEach((i: any) => list.push({ ...i, _category: '空间道具' }));
+      Object.values(inv.其他物品 || {}).forEach((i: any) => list.push({ ...i, _category: '其他物品' }));
+      Object.values(inv.载具库 || {}).forEach((i: any) => list.push({ ...i, _category: '载具' }));
     }
     return list;
   });
@@ -142,7 +142,6 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     mvuData: data,
     protagonist,
     currentAttributes,
-    volumeData,
     derivedStats,
     encumbrance,
     npcRelations,
@@ -151,7 +150,6 @@ export const useDataStore = defineStore('mvuDerivedData', () => {
     characterStatus,
     geneLockTier,
     bloodlineDetails,
-    getDicePool,
     godSpaceItems,
     inventoryItems
   };

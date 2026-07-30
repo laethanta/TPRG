@@ -62,7 +62,7 @@ const EnergyPoolSchema = z.object({
   名称: z.string().prefault('无'),
   当前值: z.coerce.number().prefault(0),
   基础上限加成: z.coerce.number().prefault(0), // 例如重复开启的补偿
-  上限: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(0)
+  上限: z.coerce.number().describe('能量池的最大容量，由AI根据血统/职业规则自行推算并更新').prefault(0)
 }).prefault({ 名称: '无', 当前值: 0, 基础上限加成: 0, 上限: 0 });
 
 // 基因锁记录

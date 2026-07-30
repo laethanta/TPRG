@@ -17,7 +17,7 @@
         <!-- 血统模态框 -->
         <div v-if="activeModal === 'bloodline' && store.bloodlineDetails" class="content-modal">
           <button class="modal-close-btn" @click="activeModal = null">×</button>
-          <h4 class="modal-title">{{ store.bloodlineDetails?.名称 }} <span class="modal-level">[{{ store.bloodlineDetails?.当前评级或层数 }}]</span></h4>
+          <h4 class="modal-title">{{ store.bloodlineDetails?.名称 }} <span class="modal-level">[{{ store.bloodlineDetails?.强化等级 }}]</span></h4>
           <div class="modal-body scrollable">
             <div class="pop-desc">{{ store.bloodlineDetails?.描述 || '无描述' }}</div>
             <div v-if="Object.keys(store.bloodlineDetails?.属性加成记录 || {}).length > 0" class="pop-section">
@@ -206,7 +206,7 @@
                 <div class="segment wp-fill" :style="{ width: wpPercent + '%' }"></div>
               </div>
             </div>
-            <div class="res-text">{{ store.protagonist?.生理与状态?.当前意志力 || 0 }} / {{ store.derivedStats.最大意志力 }}</div>
+            <div class="res-text">{{ store.protagonist?.生理与状态?.意志力 || 0 }} / {{ store.derivedStats.最大意志力 }}</div>
           </div>
 
           <!-- Energy Pool -->

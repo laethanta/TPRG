@@ -105,8 +105,7 @@ $(async () => {
               return;
             }
             eqSpatialCount++;
-            // 空间道具自身体积为负数（代表容量），取绝对值
-            spatialCapacity += Math.abs(Number(item.体积 || 0));
+            spatialCapacity += Number(item.空间体积上限 || 0);
           }
         });
 
@@ -149,61 +148,9 @@ $(async () => {
                 if (eqAccessoryCount >= 2) { item.已装备 = false; return; }
                 eqAccessoryCount++;
               }
-
-              // 提取物品自带的属性加成 (如果有隐藏的属性加成字段)
-              if (item.属性加成) {
-                for (const [attrName, bonus] of Object.entries(item.属性加成)) {
-                  equipBonus[attrName] = (equipBonus[attrName] || 0) + Number(bonus);
-                }
-              }
             }
           });
         });
-      }
-
-      // 3. 计算最终属性值，写入扁平化的属性面板
-      for (const name of attrNames) {
-        // 使用局部差值计算 (Delta Calculation) 避免无限循环
-        // 获取本次加成总和
-        const newTotalBonus = (templateBonus[name] || 0) + (equipBonus[name] || 0);
-
-        let oldTotalBonus = 0;
-        if (variables_before_update) {
-           // 如果有更新前的数据，提取旧加成
-           const oldEnt = isProtagonist
-             ? _.get(variables_before_update, 'stat_data.轮回者')
-             : _.get(variables_before_update, `stat_data.人物关系记录.${entity.姓名}`); // NPC用姓名定位
-
-           if (oldEnt) {
-             const oldTemplates = oldEnt.特质与模板?.强化模板 || {};
-             for (const tpl of Object.values<any>(oldTemplates)) {
-               if (tpl.属性加成) {
-                 oldTotalBonus += Number(tpl.属性加成[name] || 0);
-               }
-             }
-
-             const oldInv = oldEnt.物品与资产;
-             if (oldInv) {
-               const oldLibs = [oldInv.武器库, oldInv.防具库, oldInv.饰品库, oldInv.空间道具库];
-               oldLibs.forEach(lib => {
-                 _.forEach(lib, (item: any) => {
-                   if (item.已装备 && item.属性加成) {
-                     oldTotalBonus += Number(item.属性加成[name] || 0);
-                   }
-                 });
-               });
-             }
-           }
-        }
-
-        // 计算差额 (本次加成 - 上次加成)
-        const diff = newTotalBonus - oldTotalBonus;
-
-        // 当前属性直接加上差额。如果未变更装备/血统，diff为0，属性不变；如果AI改了属性，以此为新基础
-        const currentVal = Math.max(0, (Number(attrs[name]) || 1) + diff);
-
-        attrs[name] = currentVal;
-        attrs[`传奇${name}`] = currentVal >= 6 ? Math.floor((currentVal - 1) / 5) : 0;
       }
 
       const getAttr = (name: string) => Number(attrs[name]) || 1;
@@ -366,31 +313,22 @@ $(async () => {
 
         entity.资源.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
       }
-
-      // 9. 基因锁机制处理
-      if (entity.生理与状态?.基因锁) {
-        const gene = entity.生理与状态.基因锁;
-        // 每回合固定 +2 熟练度
-        gene.熟练度 = (Number(gene.熟练度) || 0) + 2;
-        // 如果当前处于开启状态，轮数累加
-        if (gene.开启状态) {
-          gene.开启轮数 = (Number(gene.开启轮数) || 0) + 1;
-        } else {
-          // 如果未开启，将开启轮数清零
-          gene.开启轮数 = 0;
-        }
-      }
     };
+
+    // 判断当前是否是 init 阶段
+    const isInit = typeof variables_before_update !== 'object';
 
     // 处理主角
     const protagonist = _.get(variables, 'stat_data.轮回者');
-    processEntity(protagonist, true);
+    const oldProtagonist = !isInit ? _.get(variables_before_update, 'stat_data.轮回者') : undefined;
+    processEntity(protagonist, oldProtagonist, true);
 
     // 处理所有 NPC
     const npcMap = _.get(variables, 'stat_data.人物关系记录');
     if (npcMap) {
-      Object.values(npcMap).forEach(npc => {
-        processEntity(npc, false);
+      Object.entries(npcMap).forEach(([npcName, npc]: [string, any]) => {
+        const oldNpc = !isInit ? _.get(variables_before_update, `stat_data.人物关系记录.${npcName}`) : undefined;
+        processEntity(npc, oldNpc, false);
       });
     }
 

@@ -1597,7 +1597,7 @@
         "上限": {
           "default": 0,
           "type": "number",
-          "description": "用于前端展示，实际值由脚本计算"
+          "description": "能量池的最大容量，由AI根据血统/职业规则自行推算并更新"
         }
       }
     },
