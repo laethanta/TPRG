@@ -15,12 +15,12 @@
         "当前影片信息": {
           "default": {
             "名称": "主神空间",
-            "类型": "中转站",
-            "难度评级": "未知",
-            "本质倾向": "混合",
+            "类型": "无",
+            "难度评级": "无",
+            "本质倾向": "无",
             "当前区域": "广场平台",
             "当前地标": "中央光球",
-            "当前精确时间": "未知"
+            "当前时间": "倒计时10天"
           },
           "type": "object",
           "properties": {
@@ -29,15 +29,15 @@
               "type": "string"
             },
             "类型": {
-              "default": "中转站",
+              "default": "无",
               "type": "string"
             },
             "难度评级": {
-              "default": "未知",
+              "default": "无",
               "type": "string"
             },
             "本质倾向": {
-              "default": "混合",
+              "default": "无",
               "type": "string"
             },
             "当前区域": {
@@ -48,10 +48,9 @@
               "default": "中央光球",
               "type": "string"
             },
-            "当前精确时间": {
-              "default": "未知",
-              "type": "string",
-              "description": "如 YYYY-MM-DD HH:mm"
+            "当前时间": {
+              "default": "倒计时10天",
+              "type": "string"
             }
           }
         },
@@ -152,8 +151,8 @@
         },
         "主神空间档案": {
           "default": {
-            "恐怖片经历计数": 0,
-            "距离下次传送天数": 10,
+            "恐怖片经历计数": 1,
+            "恐怖片倒计时": 10,
             "已解锁世界列表": [],
             "私人房间状态": "10平方米白墙空房间",
             "培元固本次数": 0,
@@ -162,12 +161,13 @@
           "type": "object",
           "properties": {
             "恐怖片经历计数": {
-              "default": 0,
+              "default": 1,
               "type": "number"
             },
-            "距离下次传送天数": {
+            "恐怖片倒计时": {
               "default": 10,
-              "type": "number"
+              "type": "number",
+              "description": "返回主神空间后开始倒计时"
             },
             "已解锁世界列表": {
               "default": [],
@@ -187,44 +187,98 @@
             },
             "主神商店当前列表": {
               "default": {
-                "武器列表": [],
-                "防具列表": [],
-                "强化模板列表": [],
-                "物品与消耗品列表": []
+                "科幻类兑换": [],
+                "魔法传说类兑换": [],
+                "血统及技能": [],
+                "材料及药品": []
               },
               "type": "object",
               "properties": {
-                "武器列表": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/__schema2"
-                  }
-                },
-                "防具列表": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/__schema14"
-                  }
-                },
-                "强化模板列表": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/__schema15"
-                  }
-                },
-                "物品与消耗品列表": {
+                "科幻类兑换": {
                   "default": [],
                   "type": "array",
                   "items": {
                     "anyOf": [
                       {
+                        "$ref": "#/$defs/__schema2"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema16"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema17"
+                      },
+                      {
                         "$ref": "#/$defs/__schema18"
                       },
                       {
                         "$ref": "#/$defs/__schema19"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema20"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema21"
+                      }
+                    ]
+                  }
+                },
+                "魔法传说类兑换": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/__schema2"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema16"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema17"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema18"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema19"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema20"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema21"
+                      }
+                    ]
+                  }
+                },
+                "血统及技能": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/__schema22"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema25"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema26"
+                      }
+                    ]
+                  }
+                },
+                "材料及药品": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/__schema19"
+                      },
+                      {
+                        "$ref": "#/$defs/__schema21"
                       }
                     ]
                   }
@@ -235,7 +289,7 @@
         }
       }
     },
-    "主角": {
+    "轮回者": {
       "default": {
         "属性面板": {},
         "技能列表": {},
@@ -274,7 +328,6 @@
             "肉体年龄": {
               "default": {
                 "实际": 20,
-                "外观": 20,
                 "寿命上限": 100,
                 "灵魂实际": 20,
                 "灵魂寿命上限": 100
@@ -282,10 +335,6 @@
               "type": "object",
               "properties": {
                 "实际": {
-                  "default": 20,
-                  "type": "number"
-                },
-                "外观": {
                   "default": 20,
                   "type": "number"
                 },
@@ -306,64 +355,65 @@
           }
         },
         "属性面板": {
-          "$ref": "#/$defs/__schema20"
+          "$ref": "#/$defs/__schema27"
         },
         "技能列表": {
-          "$ref": "#/$defs/__schema22"
+          "$ref": "#/$defs/__schema28"
         },
         "特质与模板": {
-          "$ref": "#/$defs/__schema23"
+          "$ref": "#/$defs/__schema29"
         },
         "资源": {
-          "$ref": "#/$defs/__schema24"
+          "$ref": "#/$defs/__schema30"
         },
         "生理与状态": {
           "default": {
             "生命状态": {},
-            "当前意志力": 1,
-            "意志力上限缓存": 1,
+            "意志力": 1,
+            "意志力上限": 1,
             "能量池": {},
             "不良状态点数": {},
             "固有状态": [],
             "增益状态": [],
             "基因锁": {},
-            "负重系统": {}
+            "负重系统": {},
+            "衍生属性": {}
           },
           "type": "object",
           "properties": {
             "生命状态": {
-              "$ref": "#/$defs/__schema25"
-            },
-            "当前意志力": {
-              "$ref": "#/$defs/__schema26"
-            },
-            "意志力上限缓存": {
-              "$ref": "#/$defs/__schema27"
-            },
-            "能量池": {
-              "$ref": "#/$defs/__schema28"
-            },
-            "不良状态点数": {
-              "$ref": "#/$defs/__schema29"
-            },
-            "固有状态": {
-              "$ref": "#/$defs/__schema30"
-            },
-            "增益状态": {
               "$ref": "#/$defs/__schema31"
             },
-            "基因锁": {
+            "意志力": {
+              "$ref": "#/$defs/__schema32"
+            },
+            "意志力上限": {
               "$ref": "#/$defs/__schema33"
             },
-            "衍生属性速查": {
+            "能量池": {
               "$ref": "#/$defs/__schema34"
+            },
+            "不良状态点数": {
+              "$ref": "#/$defs/__schema35"
+            },
+            "固有状态": {
+              "$ref": "#/$defs/__schema36"
+            },
+            "增益状态": {
+              "$ref": "#/$defs/__schema37"
+            },
+            "基因锁": {
+              "$ref": "#/$defs/__schema39"
+            },
+            "衍生属性": {
+              "$ref": "#/$defs/__schema40"
             },
             "负重系统": {
               "default": {
                 "体积": 5,
                 "当前负重": 0,
-                "负重上限缓存": 10,
-                "当前状态": "轻度"
+                "负重上限": 10,
+                "负重状态": "轻度"
               },
               "type": "object",
               "properties": {
@@ -376,11 +426,11 @@
                   "default": 0,
                   "type": "number"
                 },
-                "负重上限缓存": {
+                "负重上限": {
                   "default": 10,
                   "type": "number"
                 },
-                "当前状态": {
+                "负重状态": {
                   "default": "轻度",
                   "type": "string",
                   "enum": [
@@ -399,8 +449,8 @@
             "武器库": {},
             "防具库": {},
             "饰品库": {},
-            "容器库": {},
-            "消耗品与杂物": {},
+            "空间道具库": {},
+            "其他物品": {},
             "载具库": {}
           },
           "type": "object",
@@ -422,7 +472,7 @@
                 "type": "string"
               },
               "additionalProperties": {
-                "$ref": "#/$defs/__schema14"
+                "$ref": "#/$defs/__schema16"
               }
             },
             "饰品库": {
@@ -432,120 +482,20 @@
                 "type": "string"
               },
               "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "名称": {
-                    "$ref": "#/$defs/__schema3"
-                  },
-                  "本质": {
-                    "$ref": "#/$defs/__schema4"
-                  },
-                  "分类": {
-                    "$ref": "#/$defs/__schema5"
-                  },
-                  "前提": {
-                    "$ref": "#/$defs/__schema6"
-                  },
-                  "体积": {
-                    "$ref": "#/$defs/__schema7"
-                  },
-                  "重量": {
-                    "$ref": "#/$defs/__schema8"
-                  },
-                  "价格": {
-                    "$ref": "#/$defs/__schema9"
-                  },
-                  "描述": {
-                    "$ref": "#/$defs/__schema10"
-                  },
-                  "数量": {
-                    "$ref": "#/$defs/__schema11"
-                  },
-                  "已装备": {
-                    "$ref": "#/$defs/__schema12"
-                  },
-                  "关键词": {
-                    "default": "无",
-                    "type": "string"
-                  },
-                  "特性列表": {
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/__schema13"
-                    }
-                  }
-                },
-                "required": [
-                  "名称"
-                ]
+                "$ref": "#/$defs/__schema17"
               }
             },
-            "容器库": {
+            "空间道具库": {
               "default": {},
               "type": "object",
               "propertyNames": {
                 "type": "string"
               },
               "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "名称": {
-                    "$ref": "#/$defs/__schema3"
-                  },
-                  "本质": {
-                    "$ref": "#/$defs/__schema4"
-                  },
-                  "分类": {
-                    "$ref": "#/$defs/__schema5"
-                  },
-                  "前提": {
-                    "$ref": "#/$defs/__schema6"
-                  },
-                  "体积": {
-                    "$ref": "#/$defs/__schema7"
-                  },
-                  "重量": {
-                    "$ref": "#/$defs/__schema8"
-                  },
-                  "价格": {
-                    "$ref": "#/$defs/__schema9"
-                  },
-                  "描述": {
-                    "$ref": "#/$defs/__schema10"
-                  },
-                  "数量": {
-                    "$ref": "#/$defs/__schema11"
-                  },
-                  "已装备": {
-                    "$ref": "#/$defs/__schema12"
-                  },
-                  "空间体积上限": {
-                    "default": 10,
-                    "type": "number"
-                  },
-                  "内容物": {
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/__schema35"
-                    },
-                    "description": "记录内部存放的物品键名，内部物品不计入负重"
-                  },
-                  "特性列表": {
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/__schema13"
-                    }
-                  }
-                },
-                "required": [
-                  "名称"
-                ]
+                "$ref": "#/$defs/__schema18"
               }
             },
-            "消耗品与杂物": {
+            "其他物品": {
               "default": {},
               "type": "object",
               "propertyNames": {
@@ -554,10 +504,10 @@
               "additionalProperties": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/__schema18"
+                    "$ref": "#/$defs/__schema19"
                   },
                   {
-                    "$ref": "#/$defs/__schema19"
+                    "$ref": "#/$defs/__schema21"
                   }
                 ]
               }
@@ -569,86 +519,7 @@
                 "type": "string"
               },
               "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "名称": {
-                    "$ref": "#/$defs/__schema3"
-                  },
-                  "本质": {
-                    "$ref": "#/$defs/__schema4"
-                  },
-                  "分类": {
-                    "$ref": "#/$defs/__schema5"
-                  },
-                  "前提": {
-                    "$ref": "#/$defs/__schema6"
-                  },
-                  "体积": {
-                    "$ref": "#/$defs/__schema7"
-                  },
-                  "重量": {
-                    "$ref": "#/$defs/__schema8"
-                  },
-                  "价格": {
-                    "$ref": "#/$defs/__schema9"
-                  },
-                  "描述": {
-                    "$ref": "#/$defs/__schema10"
-                  },
-                  "数量": {
-                    "$ref": "#/$defs/__schema11"
-                  },
-                  "载具类型": {
-                    "default": "机械载具",
-                    "type": "string"
-                  },
-                  "生命": {
-                    "default": 10,
-                    "type": "number"
-                  },
-                  "护甲": {
-                    "default": 0,
-                    "type": "number"
-                  },
-                  "硬度": {
-                    "default": 1,
-                    "type": "number"
-                  },
-                  "速度": {
-                    "default": "10米/轮",
-                    "type": "string"
-                  },
-                  "灵活性": {
-                    "default": "中等",
-                    "type": "string"
-                  },
-                  "载员": {
-                    "default": "1人",
-                    "type": "string"
-                  },
-                  "出力": {
-                    "default": 5,
-                    "type": "number"
-                  },
-                  "机动": {
-                    "default": 5,
-                    "type": "number"
-                  },
-                  "能源": {
-                    "default": "燃油",
-                    "type": "string"
-                  },
-                  "特性列表": {
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/__schema13"
-                    }
-                  }
-                },
-                "required": [
-                  "名称"
-                ]
+                "$ref": "#/$defs/__schema20"
               }
             }
           }
@@ -708,57 +579,57 @@
             }
           },
           "属性面板": {
-            "$ref": "#/$defs/__schema20"
+            "$ref": "#/$defs/__schema27"
           },
           "技能列表": {
-            "$ref": "#/$defs/__schema22"
+            "$ref": "#/$defs/__schema28"
           },
           "特质与模板": {
-            "$ref": "#/$defs/__schema23"
+            "$ref": "#/$defs/__schema29"
           },
           "资源": {
-            "$ref": "#/$defs/__schema24"
+            "$ref": "#/$defs/__schema30"
           },
           "生理与状态": {
             "default": {
               "生命状态": {},
-              "当前意志力": 1,
-              "意志力上限缓存": 1,
+              "意志力": 1,
+              "意志力上限": 1,
               "能量池": {},
               "不良状态点数": {},
               "固有状态": [],
               "增益状态": [],
               "基因锁": {},
-              "衍生属性速查": {}
+              "衍生属性": {}
             },
             "type": "object",
             "properties": {
               "生命状态": {
-                "$ref": "#/$defs/__schema25"
-              },
-              "当前意志力": {
-                "$ref": "#/$defs/__schema26"
-              },
-              "意志力上限缓存": {
-                "$ref": "#/$defs/__schema27"
-              },
-              "能量池": {
-                "$ref": "#/$defs/__schema28"
-              },
-              "不良状态点数": {
-                "$ref": "#/$defs/__schema29"
-              },
-              "固有状态": {
-                "$ref": "#/$defs/__schema30"
-              },
-              "增益状态": {
                 "$ref": "#/$defs/__schema31"
               },
-              "基因锁": {
+              "意志力": {
+                "$ref": "#/$defs/__schema32"
+              },
+              "意志力上限": {
                 "$ref": "#/$defs/__schema33"
               },
-              "衍生属性速查": {
+              "能量池": {
                 "$ref": "#/$defs/__schema34"
+              },
+              "不良状态点数": {
+                "$ref": "#/$defs/__schema35"
+              },
+              "固有状态": {
+                "$ref": "#/$defs/__schema36"
+              },
+              "增益状态": {
+                "$ref": "#/$defs/__schema37"
+              },
+              "基因锁": {
+                "$ref": "#/$defs/__schema39"
+              },
+              "衍生属性": {
+                "$ref": "#/$defs/__schema40"
               }
             }
           },
@@ -772,13 +643,13 @@
                 "$ref": "#/$defs/__schema2"
               },
               "当前防具": {
-                "$ref": "#/$defs/__schema14"
+                "$ref": "#/$defs/__schema16"
               },
               "携带物品": {
                 "default": [],
                 "type": "array",
                 "items": {
-                  "$ref": "#/$defs/__schema36"
+                  "$ref": "#/$defs/__schema41"
                 },
                 "description": "无需详细数据的普通物品"
               }
@@ -842,22 +713,24 @@
         "数量": {
           "$ref": "#/$defs/__schema11"
         },
-        "已装备": {
+        "在空间内": {
           "$ref": "#/$defs/__schema12"
+        },
+        "已装备": {
+          "$ref": "#/$defs/__schema13"
+        },
+        "关键词": {
+          "$ref": "#/$defs/__schema14"
         },
         "武器伤害": {
           "default": "0L",
-          "type": "string"
-        },
-        "关键词": {
-          "default": "无",
           "type": "string"
         },
         "特性列表": {
           "default": [],
           "type": "array",
           "items": {
-            "$ref": "#/$defs/__schema13"
+            "$ref": "#/$defs/__schema15"
           }
         }
       },
@@ -902,9 +775,20 @@
     },
     "__schema12": {
       "default": false,
-      "type": "boolean"
+      "type": "boolean",
+      "description": "是否被收入空间道具中（不计负重）"
     },
     "__schema13": {
+      "default": false,
+      "type": "boolean",
+      "description": "是否穿戴在身上"
+    },
+    "__schema14": {
+      "default": "",
+      "type": "string",
+      "description": "只写用【】包裹的简述，如：【空间】、【防弹】"
+    },
+    "__schema15": {
       "default": {
         "名称": "未命名",
         "效果": ""
@@ -921,7 +805,7 @@
         }
       }
     },
-    "__schema14": {
+    "__schema16": {
       "type": "object",
       "properties": {
         "名称": {
@@ -951,8 +835,14 @@
         "数量": {
           "$ref": "#/$defs/__schema11"
         },
-        "已装备": {
+        "在空间内": {
           "$ref": "#/$defs/__schema12"
+        },
+        "已装备": {
+          "$ref": "#/$defs/__schema13"
+        },
+        "关键词": {
+          "$ref": "#/$defs/__schema14"
         },
         "盔甲防御": {
           "default": 0,
@@ -961,15 +851,11 @@
         "盾牌防御": {
           "type": "number"
         },
-        "关键词": {
-          "default": "无",
-          "type": "string"
-        },
         "特性列表": {
           "default": [],
           "type": "array",
           "items": {
-            "$ref": "#/$defs/__schema13"
+            "$ref": "#/$defs/__schema15"
           }
         }
       },
@@ -977,85 +863,56 @@
         "名称"
       ]
     },
-    "__schema15": {
+    "__schema17": {
       "type": "object",
       "properties": {
         "名称": {
-          "type": "string"
-        },
-        "模板分类": {
-          "default": "血统",
-          "type": "string",
-          "enum": [
-            "血统",
-            "改造",
-            "瞳术",
-            "修炼体系",
-            "典籍",
-            "流派",
-            "称号"
-          ]
+          "$ref": "#/$defs/__schema3"
         },
         "本质": {
-          "default": "魔幻本质",
-          "type": "string"
+          "$ref": "#/$defs/__schema4"
+        },
+        "分类": {
+          "$ref": "#/$defs/__schema5"
         },
         "前提": {
-          "default": "无",
-          "type": "string"
+          "$ref": "#/$defs/__schema6"
         },
-        "当前评级或层数": {
-          "default": "D级",
-          "type": "string"
+        "体积": {
+          "$ref": "#/$defs/__schema7"
+        },
+        "重量": {
+          "$ref": "#/$defs/__schema8"
         },
         "价格": {
-          "default": "",
-          "type": "string"
+          "$ref": "#/$defs/__schema9"
         },
         "描述": {
-          "default": "",
-          "type": "string"
+          "$ref": "#/$defs/__schema10"
         },
-        "属性加成记录": {
-          "default": {},
-          "type": "object",
-          "propertyNames": {
-            "$ref": "#/$defs/__schema16"
-          },
-          "additionalProperties": {
-            "$ref": "#/$defs/__schema17"
-          },
-          "description": "如 { 力量: 1, 敏捷: 1 } 以便脚本统计"
+        "数量": {
+          "$ref": "#/$defs/__schema11"
         },
-        "能量池说明": {
-          "default": "无",
-          "type": "string"
+        "在空间内": {
+          "$ref": "#/$defs/__schema12"
         },
-        "技能树说明": {
-          "default": "无",
-          "type": "string"
+        "已装备": {
+          "$ref": "#/$defs/__schema13"
+        },
+        "关键词": {
+          "$ref": "#/$defs/__schema14"
         },
         "特性列表": {
           "default": [],
           "type": "array",
           "items": {
-            "$ref": "#/$defs/__schema13"
+            "$ref": "#/$defs/__schema15"
           }
-        },
-        "关键词": {
-          "default": "",
-          "type": "string"
         }
       },
       "required": [
         "名称"
       ]
-    },
-    "__schema16": {
-      "type": "string"
-    },
-    "__schema17": {
-      "type": "number"
     },
     "__schema18": {
       "type": "object",
@@ -1087,9 +944,25 @@
         "数量": {
           "$ref": "#/$defs/__schema11"
         },
-        "效果": {
-          "default": "",
-          "type": "string"
+        "在空间内": {
+          "$ref": "#/$defs/__schema12"
+        },
+        "已装备": {
+          "$ref": "#/$defs/__schema13"
+        },
+        "关键词": {
+          "$ref": "#/$defs/__schema14"
+        },
+        "空间体积上限": {
+          "default": 10,
+          "type": "number"
+        },
+        "特性列表": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema15"
+          }
         }
       },
       "required": [
@@ -1125,6 +998,13 @@
         },
         "数量": {
           "$ref": "#/$defs/__schema11"
+        },
+        "在空间内": {
+          "$ref": "#/$defs/__schema12"
+        },
+        "效果": {
+          "default": "",
+          "type": "string"
         }
       },
       "required": [
@@ -1132,102 +1012,436 @@
       ]
     },
     "__schema20": {
-      "default": {},
       "type": "object",
       "properties": {
-        "力量": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "名称": {
+          "$ref": "#/$defs/__schema3"
         },
-        "敏捷": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "本质": {
+          "$ref": "#/$defs/__schema4"
         },
-        "耐力": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "分类": {
+          "$ref": "#/$defs/__schema5"
         },
-        "智力": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "前提": {
+          "$ref": "#/$defs/__schema6"
         },
-        "感知": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "体积": {
+          "$ref": "#/$defs/__schema7"
         },
-        "决心": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "重量": {
+          "$ref": "#/$defs/__schema8"
         },
-        "风度": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "价格": {
+          "$ref": "#/$defs/__schema9"
         },
-        "操控": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
+        "描述": {
+          "$ref": "#/$defs/__schema10"
         },
-        "沉着": {
-          "default": {
-            "基础值": 1
-          },
-          "$ref": "#/$defs/__schema21"
-        }
-      }
-    },
-    "__schema21": {
-      "default": {
-        "基础值": 1,
-        "附加常驻缓存": 0,
-        "临时加值缓存": 0,
-        "当前值": 1,
-        "传奇点数": 0
-      },
-      "type": "object",
-      "properties": {
-        "基础值": {
+        "数量": {
+          "$ref": "#/$defs/__schema11"
+        },
+        "在空间内": {
+          "$ref": "#/$defs/__schema12"
+        },
+        "载具类型": {
+          "default": "机械载具",
+          "type": "string"
+        },
+        "生命": {
+          "default": 10,
+          "type": "number"
+        },
+        "护甲": {
+          "default": 0,
+          "type": "number"
+        },
+        "硬度": {
           "default": 1,
           "type": "number"
         },
-        "附加常驻缓存": {
-          "default": 0,
-          "type": "number",
-          "description": "由脚本汇总血统/专长等永久加成"
+        "速度": {
+          "default": "10米/轮",
+          "type": "string"
         },
-        "临时加值缓存": {
-          "default": 0,
-          "type": "number",
-          "description": "由脚本汇总装备等临时加成"
+        "灵活性": {
+          "default": "中等",
+          "type": "string"
         },
-        "当前值": {
+        "载员": {
+          "default": "1人",
+          "type": "string"
+        },
+        "出力": {
+          "default": 5,
+          "type": "number"
+        },
+        "机动": {
+          "default": 5,
+          "type": "number"
+        },
+        "能源": {
+          "default": "燃油",
+          "type": "string"
+        },
+        "特性列表": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema15"
+          }
+        }
+      },
+      "required": [
+        "名称"
+      ]
+    },
+    "__schema21": {
+      "type": "object",
+      "properties": {
+        "名称": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "本质": {
+          "$ref": "#/$defs/__schema4"
+        },
+        "分类": {
+          "$ref": "#/$defs/__schema5"
+        },
+        "前提": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "体积": {
+          "$ref": "#/$defs/__schema7"
+        },
+        "重量": {
+          "$ref": "#/$defs/__schema8"
+        },
+        "价格": {
+          "$ref": "#/$defs/__schema9"
+        },
+        "描述": {
+          "$ref": "#/$defs/__schema10"
+        },
+        "数量": {
+          "$ref": "#/$defs/__schema11"
+        },
+        "在空间内": {
+          "$ref": "#/$defs/__schema12"
+        }
+      },
+      "required": [
+        "名称"
+      ]
+    },
+    "__schema22": {
+      "type": "object",
+      "properties": {
+        "名称": {
+          "type": "string"
+        },
+        "模板分类": {
+          "default": "血统",
+          "type": "string",
+          "enum": [
+            "血统",
+            "改造",
+            "瞳术",
+            "修炼体系",
+            "典籍",
+            "流派",
+            "称号"
+          ]
+        },
+        "本质": {
+          "default": "魔幻本质",
+          "type": "string"
+        },
+        "前提": {
+          "default": "无",
+          "type": "string"
+        },
+        "强化等级": {
+          "default": "D级",
+          "type": "string"
+        },
+        "价格": {
+          "default": "",
+          "type": "string"
+        },
+        "描述": {
+          "default": "",
+          "type": "string"
+        },
+        "属性加成": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/__schema23"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema24"
+          },
+          "description": "如 { 力量: 1, 敏捷: 1 } 以便脚本统计"
+        },
+        "能量池说明": {
+          "default": "无",
+          "type": "string"
+        },
+        "技能树说明": {
+          "default": "无",
+          "type": "string"
+        },
+        "特性列表": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema15"
+          }
+        },
+        "关键词": {
+          "default": "",
+          "type": "string",
+          "description": "只写用【】包裹的简述，例如：【防弹】、【追踪】等"
+        }
+      },
+      "required": [
+        "名称"
+      ]
+    },
+    "__schema23": {
+      "type": "string"
+    },
+    "__schema24": {
+      "type": "number"
+    },
+    "__schema25": {
+      "type": "object",
+      "properties": {
+        "名称": {
+          "type": "string"
+        },
+        "类型": {
+          "default": "法术",
+          "type": "string",
+          "enum": [
+            "技艺",
+            "招式",
+            "法术"
+          ]
+        },
+        "本质": {
+          "default": "魔幻本质",
+          "type": "string"
+        },
+        "关键字": {
+          "default": "",
+          "type": "string"
+        },
+        "前提": {
+          "default": "无",
+          "type": "string"
+        },
+        "专业": {
+          "default": "无",
+          "type": "string"
+        },
+        "威力值": {
+          "type": "number"
+        },
+        "价格": {
+          "default": "",
+          "type": "string"
+        },
+        "动作": {
+          "default": "标准动作",
+          "type": "string"
+        },
+        "能耗": {
+          "default": "无",
+          "type": "string"
+        },
+        "成分": {
+          "type": "string"
+        },
+        "射程": {
+          "default": "触及",
+          "type": "string"
+        },
+        "目标": {
+          "default": "一个目标",
+          "type": "string"
+        },
+        "范围": {
+          "default": "无",
+          "type": "string"
+        },
+        "持续时间": {
+          "default": "立即",
+          "type": "string"
+        },
+        "描述": {
+          "default": "",
+          "type": "string"
+        },
+        "效果": {
+          "default": "",
+          "type": "string"
+        },
+        "增幅": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "名称"
+      ]
+    },
+    "__schema26": {
+      "type": "object",
+      "properties": {
+        "名称": {
+          "type": "string"
+        },
+        "类型": {
+          "default": "普通专长",
+          "type": "string",
+          "enum": [
+            "普通专长",
+            "非凡专长",
+            "超魔专长",
+            "建卡专长",
+            "缺陷",
+            "怪癖",
+            "天赋"
+          ]
+        },
+        "等级或点数": {
           "default": 1,
-          "type": "number",
-          "description": "由脚本计算，禁止AI修改"
+          "type": "number"
         },
-        "传奇点数": {
+        "前提": {
+          "default": "无",
+          "type": "string"
+        },
+        "描述": {
+          "default": "",
+          "type": "string"
+        },
+        "特性列表": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema15"
+          }
+        },
+        "关键词": {
+          "default": "",
+          "type": "string",
+          "description": "只写用【】包裹的简述，例如：【防弹】、【追踪】等"
+        }
+      },
+      "required": [
+        "名称"
+      ]
+    },
+    "__schema27": {
+      "default": {
+        "力量": 1,
+        "传奇力量": 0,
+        "敏捷": 1,
+        "传奇敏捷": 0,
+        "耐力": 1,
+        "传奇耐力": 0,
+        "智力": 1,
+        "传奇智力": 0,
+        "感知": 1,
+        "传奇感知": 0,
+        "决心": 1,
+        "传奇决心": 0,
+        "风度": 1,
+        "传奇风度": 0,
+        "操控": 1,
+        "传奇操控": 0,
+        "沉着": 1,
+        "传奇沉着": 0
+      },
+      "type": "object",
+      "properties": {
+        "力量": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇力量": {
           "default": 0,
-          "type": "number",
-          "description": "由脚本计算，禁止AI修改"
+          "type": "number"
+        },
+        "敏捷": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇敏捷": {
+          "default": 0,
+          "type": "number"
+        },
+        "耐力": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇耐力": {
+          "default": 0,
+          "type": "number"
+        },
+        "智力": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇智力": {
+          "default": 0,
+          "type": "number"
+        },
+        "感知": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇感知": {
+          "default": 0,
+          "type": "number"
+        },
+        "决心": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇决心": {
+          "default": 0,
+          "type": "number"
+        },
+        "风度": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇风度": {
+          "default": 0,
+          "type": "number"
+        },
+        "操控": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇操控": {
+          "default": 0,
+          "type": "number"
+        },
+        "沉着": {
+          "default": 1,
+          "type": "number"
+        },
+        "传奇沉着": {
+          "default": 0,
+          "type": "number"
         }
       }
     },
-    "__schema22": {
+    "__schema28": {
       "default": {},
       "type": "object",
       "propertyNames": {
@@ -1236,9 +1450,7 @@
       "additionalProperties": {
         "default": {
           "等级": 0,
-          "已解锁专业": [],
-          "常驻加值缓存": 0,
-          "临时加值缓存": 0
+          "专业": []
         },
         "type": "object",
         "properties": {
@@ -1246,27 +1458,17 @@
             "default": 0,
             "type": "number"
           },
-          "已解锁专业": {
+          "专业": {
             "default": [],
             "type": "array",
             "items": {
               "type": "string"
             }
-          },
-          "常驻加值缓存": {
-            "default": 0,
-            "type": "number",
-            "description": "由脚本汇总血统/专长等永久加成"
-          },
-          "临时加值缓存": {
-            "default": 0,
-            "type": "number",
-            "description": "由脚本汇总装备等临时加成"
           }
         }
       }
     },
-    "__schema23": {
+    "__schema29": {
       "default": {
         "专长列表": {},
         "强化模板": {},
@@ -1281,51 +1483,7 @@
             "type": "string"
           },
           "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "名称": {
-                "type": "string"
-              },
-              "类型": {
-                "default": "普通专长",
-                "type": "string",
-                "enum": [
-                  "普通专长",
-                  "非凡专长",
-                  "超魔专长",
-                  "建卡专长",
-                  "缺陷",
-                  "怪癖",
-                  "天赋"
-                ]
-              },
-              "等级或点数": {
-                "default": 1,
-                "type": "number"
-              },
-              "前提": {
-                "default": "无",
-                "type": "string"
-              },
-              "描述": {
-                "default": "",
-                "type": "string"
-              },
-              "特性列表": {
-                "default": [],
-                "type": "array",
-                "items": {
-                  "$ref": "#/$defs/__schema13"
-                }
-              },
-              "关键词": {
-                "default": "",
-                "type": "string"
-              }
-            },
-            "required": [
-              "名称"
-            ]
+            "$ref": "#/$defs/__schema26"
           }
         },
         "强化模板": {
@@ -1335,7 +1493,7 @@
             "type": "string"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/__schema15"
+            "$ref": "#/$defs/__schema22"
           }
         },
         "技艺法术": {
@@ -1345,90 +1503,12 @@
             "type": "string"
           },
           "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "名称": {
-                "type": "string"
-              },
-              "类型": {
-                "default": "法术",
-                "type": "string",
-                "enum": [
-                  "技艺",
-                  "招式",
-                  "法术"
-                ]
-              },
-              "本质": {
-                "default": "魔幻本质",
-                "type": "string"
-              },
-              "关键字": {
-                "default": "",
-                "type": "string"
-              },
-              "前提": {
-                "default": "无",
-                "type": "string"
-              },
-              "专业": {
-                "default": "无",
-                "type": "string"
-              },
-              "威力值": {
-                "type": "number"
-              },
-              "价格": {
-                "default": "",
-                "type": "string"
-              },
-              "动作": {
-                "default": "标准动作",
-                "type": "string"
-              },
-              "能耗": {
-                "default": "无",
-                "type": "string"
-              },
-              "成分": {
-                "type": "string"
-              },
-              "射程": {
-                "default": "触及",
-                "type": "string"
-              },
-              "目标": {
-                "default": "一个目标",
-                "type": "string"
-              },
-              "范围": {
-                "default": "无",
-                "type": "string"
-              },
-              "持续时间": {
-                "default": "立即",
-                "type": "string"
-              },
-              "描述": {
-                "default": "",
-                "type": "string"
-              },
-              "效果": {
-                "default": "",
-                "type": "string"
-              },
-              "增幅": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "名称"
-            ]
+            "$ref": "#/$defs/__schema25"
           }
         }
       }
     },
-    "__schema24": {
+    "__schema30": {
       "default": {
         "奖励点": 0,
         "经验值": 0,
@@ -1451,9 +1531,9 @@
         }
       }
     },
-    "__schema25": {
+    "__schema31": {
       "default": {
-        "上限缓存": 5,
+        "上限": 5,
         "完好": 5,
         "冲击B": 0,
         "严重L": 0,
@@ -1461,7 +1541,7 @@
       },
       "type": "object",
       "properties": {
-        "上限缓存": {
+        "上限": {
           "default": 5,
           "type": "number",
           "description": "用于前端展示，实际值由脚本计算"
@@ -1484,21 +1564,21 @@
         }
       }
     },
-    "__schema26": {
+    "__schema32": {
       "default": 1,
       "type": "number"
     },
-    "__schema27": {
+    "__schema33": {
       "default": 1,
       "type": "number",
       "description": "用于前端展示，实际值由脚本计算"
     },
-    "__schema28": {
+    "__schema34": {
       "default": {
         "名称": "无",
         "当前值": 0,
         "基础上限加成": 0,
-        "上限缓存": 0
+        "上限": 0
       },
       "type": "object",
       "properties": {
@@ -1514,14 +1594,14 @@
           "default": 0,
           "type": "number"
         },
-        "上限缓存": {
+        "上限": {
           "default": 0,
           "type": "number",
           "description": "用于前端展示，实际值由脚本计算"
         }
       }
     },
-    "__schema29": {
+    "__schema35": {
       "default": {},
       "type": "object",
       "propertyNames": {
@@ -1532,34 +1612,34 @@
         "type": "number"
       }
     },
-    "__schema30": {
+    "__schema36": {
       "default": [],
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-    "__schema31": {
+    "__schema37": {
       "default": [],
       "type": "array",
       "items": {
-        "$ref": "#/$defs/__schema32"
+        "$ref": "#/$defs/__schema38"
       },
       "description": "记录临时增益，如加速、隐形等"
     },
-    "__schema32": {
+    "__schema38": {
       "type": "string"
     },
-    "__schema33": {
+    "__schema39": {
       "default": {
-        "最高已开启阶数": 0,
+        "最高阶数": 0,
         "熟练度": 0,
-        "当前处于开启阶数": 0,
-        "反噬记录": {}
+        "开启状态": false,
+        "开启轮数": 0
       },
       "type": "object",
       "properties": {
-        "最高已开启阶数": {
+        "最高阶数": {
           "default": 0,
           "type": "number"
         },
@@ -1567,21 +1647,17 @@
           "default": 0,
           "type": "number"
         },
-        "当前处于开启阶数": {
+        "开启状态": {
+          "default": false,
+          "type": "boolean"
+        },
+        "开启轮数": {
           "default": 0,
           "type": "number"
-        },
-        "反噬记录": {
-          "default": {},
-          "type": "object",
-          "propertyNames": {
-            "type": "string"
-          },
-          "additionalProperties": {}
         }
       }
     },
-    "__schema34": {
+    "__schema40": {
       "default": {
         "最大HP": 5,
         "最大意志力": 2,
@@ -1589,9 +1665,10 @@
         "防御附加成功": 0,
         "先攻": 2,
         "速度": 10,
-        "意志豁免DP": 2,
-        "反射豁免DP": 2,
-        "强韧豁免DP": 2
+        "意志豁免": 2,
+        "反射豁免": 2,
+        "强韧豁免": 2,
+        "空间余量": 0
       },
       "type": "object",
       "properties": {
@@ -1619,24 +1696,26 @@
           "default": 10,
           "type": "number"
         },
-        "意志豁免DP": {
+        "意志豁免": {
           "default": 2,
           "type": "number"
         },
-        "反射豁免DP": {
+        "反射豁免": {
           "default": 2,
           "type": "number"
         },
-        "强韧豁免DP": {
+        "强韧豁免": {
           "default": 2,
           "type": "number"
+        },
+        "空间余量": {
+          "default": 0,
+          "type": "number",
+          "description": "计算出的空间道具剩余体积"
         }
       }
     },
-    "__schema35": {
-      "type": "string"
-    },
-    "__schema36": {
+    "__schema41": {
       "type": "string"
     }
   }

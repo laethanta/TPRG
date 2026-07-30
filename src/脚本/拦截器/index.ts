@@ -9,12 +9,12 @@ declare const $: any;
 $(async () => {
   await waitGlobalInitialized('Mvu');
 
-  const handleVariables = (variables: any) => {
+  const handleVariables = (variables: any, variables_before_update?: any) => {
     // 抽出计算核心逻辑为一个函数，方便对主角和所有 NPC 循环复用
-    const processEntity = (entity: any, isProtagonist: boolean) => {
+    const processEntity = (entity: any, oldEntity: any, isProtagonist: boolean) => {
       if (!entity) return;
 
-      const attrs = entity.属性面板;
+      const attrs = entity.属性面板;       // 这是AI看到的扁平属性结果面板
       const hp = entity.生理与状态?.生命状态;
       const statusPoints = entity.生理与状态?.不良状态点数;
       const fixedStatus = entity.生理与状态?.固有状态;
@@ -22,41 +22,194 @@ $(async () => {
 
       if (!attrs || !hp || !fixedStatus) return;
 
-      // 1. 自动汇总属性值并写入 MVU
       const attrNames = ['力量', '敏捷', '耐力', '智力', '感知', '决心', '风度', '操控', '沉着'];
 
-      // 扫描强化模板，提取属性加成
-      const templates = entity.特质与模板?.强化模板 || {};
-      const templateBonus: Record<string, number> = {};
-      for (const tpl of Object.values<any>(templates)) {
-        if (tpl.属性加成记录) {
-          for (const [attrName, bonus] of Object.entries(tpl.属性加成记录)) {
-            templateBonus[attrName] = (templateBonus[attrName] || 0) + Number(bonus);
+      // 提取指定实体的全部加成（血统 + 装备）
+      const getBuffs = (ent: any) => {
+        const buffs: Record<string, number> = {};
+        if (!ent) return buffs;
+
+        // 血统加成
+        const templates = ent.特质与模板?.强化模板 || {};
+        for (const tpl of Object.values<any>(templates)) {
+          if (tpl.属性加成) {
+            for (const [attrName, bonus] of Object.entries(tpl.属性加成)) {
+              buffs[attrName] = (buffs[attrName] || 0) + Number(bonus);
+            }
           }
         }
+
+        // 装备加成
+        const inv = ent.物品与资产;
+        if (inv) {
+          const allLibs = [inv.武器库, inv.防具库, inv.饰品库, inv.空间道具库];
+          allLibs.forEach(lib => {
+            _.forEach(lib, (item: any) => {
+              if (item.已装备 && item.属性加成) {
+                for (const [attrName, bonus] of Object.entries(item.属性加成)) {
+                  buffs[attrName] = (buffs[attrName] || 0) + Number(bonus);
+                }
+              }
+            });
+          });
+        }
+        return buffs;
+      };
+
+      // 1. 差值法 (Delta Calculation) 动态更新属性面板
+      const newBuffs = getBuffs(entity);
+      let oldBuffs: Record<string, number> = {};
+
+      const isInit = typeof variables_before_update !== 'object';
+      if (!isInit && oldEntity) {
+        oldBuffs = getBuffs(oldEntity);
       }
 
       for (const name of attrNames) {
-        if (attrs[name]) {
-          const base = Number(attrs[name].基础值 || 0);
-
-          // 如果没有明确由AI设置常驻加值，将模板加成自动同步过去
-          attrs[name].附加常驻缓存 = templateBonus[name] || 0;
-
-          const permanentBonus = Number(attrs[name].附加常驻缓存 || 0);
-          const tempBonus = Number(attrs[name].临时加值缓存 || 0);
-
-          const currentVal = Math.max(0, base + permanentBonus + tempBonus);
-
-          attrs[name].当前值 = currentVal;
-          attrs[name].传奇点数 = currentVal >= 6 ? Math.floor((currentVal - 1) / 5) : 0;
+        const diff = (newBuffs[name] || 0) - (oldBuffs[name] || 0);
+        if (diff !== 0) {
+          // 如果加成发生了变化（比如穿脱了装备，或血统进阶），把差值直接叠加到当前属性上
+          attrs[name] = Math.max(0, (Number(attrs[name]) || 1) + diff);
         }
       }
 
-      const getAttr = (name: string) => attrs[name]?.当前值 ?? 1;
-      const getLeg = (name: string) => attrs[name]?.传奇点数 ?? 0;
+      // 计算传奇点数
+      for (const name of attrNames) {
+        const currentVal = Number(attrs[name]) || 1;
+        attrs[`传奇${name}`] = currentVal >= 6 ? Math.floor((currentVal - 1) / 5) : 0;
+      }
 
-      // 2. 计算体积与负重 (如果存在物品库)
+      // 2. 扫描已装备的物品，处理装备槽位限制与空间道具
+      let armorDef = 0;
+      let shieldDef = 0;
+      let totalWeight = 0;
+      let eqWeaponCount = 0;
+      let eqArmorCount = 0;
+      let eqAccessoryCount = 0;
+      let eqSpatialCount = 0;
+      let spatialCapacity = 0;
+      let spatialUsed = 0;
+
+      const parseWeight = (wStr: string) => {
+        if (!wStr) return 0;
+        const match = String(wStr).match(/([\d.]+)/);
+        return match ? parseFloat(match[1]) : 0;
+      };
+
+      if (inventory) {
+        // 先处理空间道具，获取容量上限
+        _.forEach(inventory.空间道具库, (item: any) => {
+          if (item.已装备) {
+            if (eqSpatialCount >= 1) {
+              item.已装备 = false; // 强行卸下超出的空间道具
+              return;
+            }
+            eqSpatialCount++;
+            // 空间道具自身体积为负数（代表容量），取绝对值
+            spatialCapacity += Math.abs(Number(item.体积 || 0));
+          }
+        });
+
+        // 统一遍历所有物品库，计算装备加成与负重
+        const allLibs = [
+          inventory.武器库, inventory.防具库, inventory.饰品库, inventory.其他物品, inventory.载具库, inventory.空间道具库
+        ];
+
+        allLibs.forEach((lib, libIdx) => {
+          _.forEach(lib, (item: any) => {
+            // 空间内物品判定
+            if (item.在空间内) {
+              const v = Number(item.体积 || 0) * (item.数量 || 1);
+              if (spatialUsed + v > spatialCapacity) {
+                // 超出空间上限，强行从空间弹出
+                item.在空间内 = false;
+                if (isProtagonist) toastr?.warning(`【系统】空间容量不足，[${item.名称}]已弹出。`);
+              } else {
+                spatialUsed += v;
+              }
+            }
+
+            // 如果不在空间内，计算物理重量
+            if (!item.在空间内) {
+              const w = parseWeight(item.重量);
+              totalWeight += w * (item.数量 || 1);
+            }
+
+            // 处理装备槽位与属性提取
+            if (item.已装备) {
+              if (libIdx === 0) { // 武器库
+                if (eqWeaponCount >= 2) { item.已装备 = false; return; }
+                eqWeaponCount++;
+              } else if (libIdx === 1) { // 防具库
+                if (eqArmorCount >= 1) { item.已装备 = false; return; }
+                eqArmorCount++;
+                if (item.盔甲防御) armorDef += Number(item.盔甲防御);
+                if (item.盾牌防御) shieldDef += Number(item.盾牌防御);
+              } else if (libIdx === 2) { // 饰品库
+                if (eqAccessoryCount >= 2) { item.已装备 = false; return; }
+                eqAccessoryCount++;
+              }
+
+              // 提取物品自带的属性加成 (如果有隐藏的属性加成字段)
+              if (item.属性加成) {
+                for (const [attrName, bonus] of Object.entries(item.属性加成)) {
+                  equipBonus[attrName] = (equipBonus[attrName] || 0) + Number(bonus);
+                }
+              }
+            }
+          });
+        });
+      }
+
+      // 3. 计算最终属性值，写入扁平化的属性面板
+      for (const name of attrNames) {
+        // 使用局部差值计算 (Delta Calculation) 避免无限循环
+        // 获取本次加成总和
+        const newTotalBonus = (templateBonus[name] || 0) + (equipBonus[name] || 0);
+
+        let oldTotalBonus = 0;
+        if (variables_before_update) {
+           // 如果有更新前的数据，提取旧加成
+           const oldEnt = isProtagonist
+             ? _.get(variables_before_update, 'stat_data.轮回者')
+             : _.get(variables_before_update, `stat_data.人物关系记录.${entity.姓名}`); // NPC用姓名定位
+
+           if (oldEnt) {
+             const oldTemplates = oldEnt.特质与模板?.强化模板 || {};
+             for (const tpl of Object.values<any>(oldTemplates)) {
+               if (tpl.属性加成) {
+                 oldTotalBonus += Number(tpl.属性加成[name] || 0);
+               }
+             }
+
+             const oldInv = oldEnt.物品与资产;
+             if (oldInv) {
+               const oldLibs = [oldInv.武器库, oldInv.防具库, oldInv.饰品库, oldInv.空间道具库];
+               oldLibs.forEach(lib => {
+                 _.forEach(lib, (item: any) => {
+                   if (item.已装备 && item.属性加成) {
+                     oldTotalBonus += Number(item.属性加成[name] || 0);
+                   }
+                 });
+               });
+             }
+           }
+        }
+
+        // 计算差额 (本次加成 - 上次加成)
+        const diff = newTotalBonus - oldTotalBonus;
+
+        // 当前属性直接加上差额。如果未变更装备/血统，diff为0，属性不变；如果AI改了属性，以此为新基础
+        const currentVal = Math.max(0, (Number(attrs[name]) || 1) + diff);
+
+        attrs[name] = currentVal;
+        attrs[`传奇${name}`] = currentVal >= 6 ? Math.floor((currentVal - 1) / 5) : 0;
+      }
+
+      const getAttr = (name: string) => Number(attrs[name]) || 1;
+      const getLeg = (name: string) => Number(attrs[`传奇${name}`]) || 0;
+
+      // 4. 计算体积与物理负重状态
       const volume = entity.生理与状态?.负重系统?.体积 ?? 5;
       let hpMod: number;
       if (volume < 1) hpMod = 0;
@@ -65,53 +218,18 @@ $(async () => {
       else if (volume <= 12) hpMod = 10;
       else hpMod = 17;
 
-      let armorDef = 0;
-      let shieldDef = 0;
-
-      if (inventory) {
-        const spatialContents = new Set<string>();
-        _.forEach(inventory.容器库, (container: any) => {
-          const hasSpatialTrait = container.特性列表?.some((t: any) => t.名称.includes('空间') || t.效果.includes('空间'));
-          const isSpatialName = /空间|储物|异次元/.test(container.名称);
-          if (hasSpatialTrait || isSpatialName) {
-            (container.内容物 || []).forEach((itemName: string) => spatialContents.add(itemName));
-          }
-        });
-
-        let totalWeight = 0;
-        const parseWeight = (wStr: string) => {
-          if (!wStr) return 0;
-          const match = String(wStr).match(/([\d.]+)/);
-          return match ? parseFloat(match[1]) : 0;
-        };
-
-        const allLibs = [
-          inventory.武器库, inventory.防具库, inventory.饰品库, inventory.消耗品与杂物, inventory.容器库
-        ];
-
-        allLibs.forEach(lib => {
-          _.forEach(lib, (item: any, key: string) => {
-            if (!spatialContents.has(key)) {
-              const w = parseWeight(item.重量);
-              totalWeight += w * (item.数量 || 1);
-            }
-            if (item.已装备) {
-               if (item.盔甲防御) armorDef += Number(item.盔甲防御);
-               if (item.盾牌防御) shieldDef += Number(item.盾牌防御);
-            }
-          });
-        });
-
-        if (entity.生理与状态.负重系统) {
-          entity.生理与状态.负重系统.当前负重 = totalWeight;
-        }
-
-        if (inventory.当前防具 && inventory.当前防具.盔甲防御) {
-          armorDef += Number(inventory.当前防具.盔甲防御);
-        }
+      if (entity.生理与状态?.负重系统) {
+        const sys = entity.生理与状态.负重系统;
+        sys.当前负重 = totalWeight;
+        const limit = (10 + 3 * getAttr('力量')) * (getLeg('力量') + 1);
+        sys.负重上限 = limit;
+        if (totalWeight > limit * 3) sys.负重状态 = '压垮';
+        else if (totalWeight > limit * 2) sys.负重状态 = '重度';
+        else if (totalWeight > limit) sys.负重状态 = '中度';
+        else sys.负重状态 = '轻度';
       }
 
-      // 3. 计算所有衍生属性
+      // 5. 计算衍生属性
       const legEnd = getLeg('耐力');
       const legHpBonus = (legEnd * (legEnd + 1)) / 2;
       const MAX_HP = getAttr('耐力') + hpMod + legHpBonus;
@@ -120,23 +238,24 @@ $(async () => {
 
       const getSkill = (name: string) => {
         const s = entity.技能列表?.[name];
-        return s ? (Number(s.等级||0) + Number(s.常驻加值缓存||0) + Number(s.临时加值缓存||0)) : 0;
+        return s ? Number(s.等级||0) : 0;
       };
 
-      if (entity.生理与状态.衍生属性速查) {
-        const derived = entity.生理与状态.衍生属性速查;
-        derived.最大生命值 = MAX_HP;
+      if (entity.生理与状态?.衍生属性) {
+        const derived = entity.生理与状态.衍生属性;
+        derived.最大HP = MAX_HP;
         derived.最大意志力 = getAttr('决心') + getAttr('沉着') + (getLeg('决心') * 3) + (getLeg('沉着') * 3);
         derived.基础防御 = baseDef + armorDef + shieldDef;
         derived.防御附加成功 = getLeg('敏捷') + getLeg('感知');
         derived.先攻 = getAttr('敏捷') + getAttr('沉着') + (getLeg('沉着') * 3);
-        derived.速度_米 = getAttr('力量') + getAttr('敏捷') + 5;
-        derived.意志豁免DP = getAttr('决心') + getSkill('感受') + (getLeg('决心') * 3);
-        derived.反射豁免DP = getAttr('敏捷') + getSkill('运动') + (getLeg('敏捷') * 3);
-        derived.强韧豁免DP = getAttr('耐力') + getSkill('求生') + (legEnd * 3);
+        derived.速度 = getAttr('力量') + getAttr('敏捷') + 5;
+        derived.意志豁免 = getAttr('决心') + getSkill('感受') + (getLeg('决心') * 3);
+        derived.反射豁免 = getAttr('敏捷') + getSkill('运动') + (getLeg('敏捷') * 3);
+        derived.强韧豁免 = getAttr('耐力') + getSkill('求生') + (legEnd * 3);
+        derived.空间余量 = Math.max(0, spatialCapacity - spatialUsed);
       }
 
-      // 4. 生命值 B/L/A 满溢转化逻辑
+      // 6. 生命值 B/L/A 满溢转化逻辑
       let b = hp.冲击B || 0;
       let l = hp.严重L || 0;
       let a = hp.恶性A || 0;
@@ -163,7 +282,7 @@ $(async () => {
       hp.恶性A = a;
       hp.完好 = Math.max(0, MAX_HP - (b + l + a));
 
-      // 5. 0属性及阈值惩罚判定
+      // 7. 0属性及阈值惩罚判定
       let diedFromStats = false;
       let comatoseFromStats = false;
       let downedFromStats = false;
@@ -206,9 +325,9 @@ $(async () => {
           if (isProtagonist) toastr?.warning(`【系统警告】状态点数超标，角色强制昏迷！`);
         }
       }
-      // 6. 支线剧情自动进位 (三进一)
-      if (entity.资源 && typeof entity.资源?.支线剧情 === 'string') {
-        const plotStr = entity.资源?.支线剧情;
+      // 8. 支线剧情自动进位 (三进一)
+      if (entity.资源 && typeof entity.资源.支线剧情 === 'string') {
+        const plotStr = entity.资源.支线剧情;
         let s = 0, a = 0, b = 0, c = 0, d = 0;
 
         // 提取现有的支线数量
@@ -245,15 +364,29 @@ $(async () => {
         if (newC > 0) parts.push(`C×${newC}`);
         if (newD > 0) parts.push(`D×${newD}`);
 
-        entity.资源?.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
+        entity.资源.支线剧情 = parts.length > 0 ? parts.join(' ') : '无';
+      }
+
+      // 9. 基因锁机制处理
+      if (entity.生理与状态?.基因锁) {
+        const gene = entity.生理与状态.基因锁;
+        // 每回合固定 +2 熟练度
+        gene.熟练度 = (Number(gene.熟练度) || 0) + 2;
+        // 如果当前处于开启状态，轮数累加
+        if (gene.开启状态) {
+          gene.开启轮数 = (Number(gene.开启轮数) || 0) + 1;
+        } else {
+          // 如果未开启，将开启轮数清零
+          gene.开启轮数 = 0;
+        }
       }
     };
 
-    // 1. 处理主角
-    const protagonist = _.get(variables, 'stat_data.主角');
+    // 处理主角
+    const protagonist = _.get(variables, 'stat_data.轮回者');
     processEntity(protagonist, true);
 
-    // 2. 处理所有 NPC
+    // 处理所有 NPC
     const npcMap = _.get(variables, 'stat_data.人物关系记录');
     if (npcMap) {
       Object.values(npcMap).forEach(npc => {

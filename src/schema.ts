@@ -5,60 +5,53 @@ import _ from 'lodash';
 // 1. 基础构件 (Primitive Schemas)
 // ----------------------------------------------------------------------
 
-// 肉体与灵魂年龄结构 (仅主角使用详细年龄)
+// 肉体与灵魂年龄结构
 const AgeSchema = z.object({
   实际: z.coerce.number().prefault(20),
-  外观: z.coerce.number().prefault(20),
   寿命上限: z.coerce.number().prefault(100),
   灵魂实际: z.coerce.number().prefault(20),
   灵魂寿命上限: z.coerce.number().prefault(100)
-}).prefault({ 实际: 20, 外观: 20, 寿命上限: 100, 灵魂实际: 20, 灵魂寿命上限: 100 });
+}).prefault({ 实际: 20, 寿命上限: 100, 灵魂实际: 20, 灵魂寿命上限: 100 });
 
-// 九维属性结构 (仅记录原生投入的加点基础值，当前值和传奇点数由脚本自动汇总后填入衍生速查)
-const AttributeValueSchema = z.object({
-  基础值: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
-  附加常驻缓存: z.coerce.number().describe('由脚本汇总血统/专长等永久加成').prefault(0),
-  临时加值缓存: z.coerce.number().describe('由脚本汇总装备等临时加成').prefault(0),
-  当前值: z.coerce.number().describe('由脚本计算，禁止AI修改').prefault(1),
-  传奇点数: z.coerce.number().describe('由脚本计算，禁止AI修改').prefault(0)
-}).prefault({ 基础值: 1, 附加常驻缓存: 0, 临时加值缓存: 0, 当前值: 1, 传奇点数: 0 });
-
+// 扁平化属性结构
 const AttributesSchema = z.object({
-  // 生理系
-  力量: AttributeValueSchema.prefault({ 基础值: 1 }),
-  敏捷: AttributeValueSchema.prefault({ 基础值: 1 }),
-  耐力: AttributeValueSchema.prefault({ 基础值: 1 }),
-  // 心智系
-  智力: AttributeValueSchema.prefault({ 基础值: 1 }),
-  感知: AttributeValueSchema.prefault({ 基础值: 1 }),
-  决心: AttributeValueSchema.prefault({ 基础值: 1 }),
-  // 互动系
-  风度: AttributeValueSchema.prefault({ 基础值: 1 }),
-  操控: AttributeValueSchema.prefault({ 基础值: 1 }),
-  沉着: AttributeValueSchema.prefault({ 基础值: 1 })
-}).prefault({});
+  力量: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇力量: z.coerce.number().prefault(0),
+  敏捷: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇敏捷: z.coerce.number().prefault(0),
+  耐力: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇耐力: z.coerce.number().prefault(0),
+  智力: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇智力: z.coerce.number().prefault(0),
+  感知: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇感知: z.coerce.number().prefault(0),
+  决心: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇决心: z.coerce.number().prefault(0),
+  风度: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇风度: z.coerce.number().prefault(0),
+  操控: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇操控: z.coerce.number().prefault(0),
+  沉着: z.coerce.number().transform(v => _.clamp(v, 0, 999)).prefault(1),
+  传奇沉着: z.coerce.number().prefault(0)
+}).prefault({ 力量: 1, 传奇力量: 0, 敏捷: 1, 传奇敏捷: 0, 耐力: 1, 传奇耐力: 0, 智力: 1, 传奇智力: 0, 感知: 1, 传奇感知: 0, 决心: 1, 传奇决心: 0, 风度: 1, 传奇风度: 0, 操控: 1, 传奇操控: 0, 沉着: 1, 传奇沉着: 0 });
 
 // 技能与专业结构 (基础技能)
 const SkillSchema = z.object({
   等级: z.coerce.number().transform(v => _.clamp(v, 0, 15)).prefault(0), // 0-15级
-  已解锁专业: z.array(z.string()).prefault([]), // 如：['手枪', '步枪']
-  常驻加值缓存: z.coerce.number().describe('由脚本汇总血统/专长等永久加成').prefault(0),
-  临时加值缓存: z.coerce.number().describe('由脚本汇总装备等临时加成').prefault(0)
-}).prefault({ 等级: 0, 已解锁专业: [], 常驻加值缓存: 0, 临时加值缓存: 0 });
+  专业: z.array(z.string()).prefault([]) // 如：['手枪', '步枪']
+}).prefault({ 等级: 0, 专业: [] });
 
 // 技能列表集合结构
-// 我们不再硬编码所有19个技能，而是采用 Record，允许通过名称动态存取，
-// 这样同时也完美兼容了 "手艺-制造科技武器" 这种子分类技能。
 const SkillListSchema = z.record(z.string(), SkillSchema).prefault({});
 
-// 生命周期状态池 (B/L/A 伤害记录)
+// 生命周期状态池
 const HealthPoolsSchema = z.object({
-  上限缓存: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(5),
+  上限: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(5),
   完好: z.coerce.number().prefault(5),
   冲击B: z.coerce.number().prefault(0),
   严重L: z.coerce.number().prefault(0),
   恶性A: z.coerce.number().prefault(0)
-}).prefault({ 上限缓存: 5, 完好: 5, 冲击B: 0, 严重L: 0, 恶性A: 0 });
+}).prefault({ 上限: 5, 完好: 5, 冲击B: 0, 严重L: 0, 恶性A: 0 });
 
 // 不良状态与增益状态
 const StatusPointsSchema = z.record(z.string(), z.coerce.number().prefault(0)).prefault({});
@@ -69,25 +62,24 @@ const EnergyPoolSchema = z.object({
   名称: z.string().prefault('无'),
   当前值: z.coerce.number().prefault(0),
   基础上限加成: z.coerce.number().prefault(0), // 例如重复开启的补偿
-  上限缓存: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(0)
-}).prefault({ 名称: '无', 当前值: 0, 基础上限加成: 0, 上限缓存: 0 });
+  上限: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(0)
+}).prefault({ 名称: '无', 当前值: 0, 基础上限加成: 0, 上限: 0 });
 
 // 基因锁记录
 const GeneLockSchema = z.object({
-  最高已开启阶数: z.coerce.number().transform(v => _.clamp(v, 0, 5)).prefault(0),
+  最高阶数: z.coerce.number().transform(v => _.clamp(v, 0, 5)).prefault(0),
   熟练度: z.coerce.number().prefault(0),
-  当前处于开启阶数: z.coerce.number().transform(v => _.clamp(v, 0, 5)).prefault(0),
-  反噬记录: z.record(z.string(), z.any()).prefault({}) // 记录如开启轮数等信息
-}).prefault({ 最高已开启阶数: 0, 熟练度: 0, 当前处于开启阶数: 0, 反噬记录: {} });
+  开启状态: z.boolean().prefault(false),
+  开启轮数: z.coerce.number().prefault(0)
+}).prefault({ 最高阶数: 0, 熟练度: 0, 开启状态: false, 开启轮数: 0 });
 
 // 负重状态与体积 (主要为主角准备，供脚本计算后缓存)
 const EncumbranceSchema = z.object({
   体积: z.coerce.number().describe('由血统/专长等计算').prefault(5),
   当前负重: z.coerce.number().prefault(0),
-  负重上限缓存: z.coerce.number().prefault(10),
-  当前状态: z.enum(['轻度', '中度', '重度', '压垮']).prefault('轻度')
-}).prefault({ 体积: 5, 当前负重: 0, 负重上限缓存: 10, 当前状态: '轻度' });
-
+  负重上限: z.coerce.number().prefault(10),
+  负重状态: z.enum(['轻度', '中度', '重度', '压垮']).prefault('轻度')
+}).prefault({ 体积: 5, 当前负重: 0, 负重上限: 10, 负重状态: '轻度' });
 
 const DerivedStatsSchema = z.object({
   最大HP: z.coerce.number().prefault(5),
@@ -96,28 +88,28 @@ const DerivedStatsSchema = z.object({
   防御附加成功: z.coerce.number().prefault(0),
   先攻: z.coerce.number().prefault(2),
   速度: z.coerce.number().prefault(10),
-  意志豁免DP: z.coerce.number().prefault(2),
-  反射豁免DP: z.coerce.number().prefault(2),
-  强韧豁免DP: z.coerce.number().prefault(2)
-}).prefault({ 最大HP: 5, 最大意志力: 2, 基础防御: 1, 防御附加成功: 0, 先攻: 2, 速度: 10, 意志豁免DP: 2, 反射豁免DP: 2, 强韧豁免DP: 2 });
+  意志豁免: z.coerce.number().prefault(2),
+  反射豁免: z.coerce.number().prefault(2),
+  强韧豁免: z.coerce.number().prefault(2),
+  空间余量: z.coerce.number().describe('计算出的空间道具剩余体积').prefault(0)
+}).prefault({ 最大HP: 5, 最大意志力: 2, 基础防御: 1, 防御附加成功: 0, 先攻: 2, 速度: 10, 意志豁免: 2, 反射豁免: 2, 强韧豁免: 2, 空间余量: 0 });
 
 // 生理与状态集合 (通用基础结构)
-
 const PhysiologyBaseSchema = z.object({
   生命状态: HealthPoolsSchema,
-  当前意志力: z.coerce.number().prefault(1),
-  意志力上限缓存: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(1),
+  意志力: z.coerce.number().prefault(1),
+  意志力上限: z.coerce.number().describe('用于前端展示，实际值由脚本计算').prefault(1),
   能量池: EnergyPoolSchema,
   不良状态点数: StatusPointsSchema,
   固有状态: FixedStatusSchema,
   增益状态: z.array(z.string()).describe('记录临时增益，如加速、隐形等').prefault([]),
   基因锁: GeneLockSchema,
-  衍生属性速查: DerivedStatsSchema
+  衍生属性: DerivedStatsSchema
 });
 
 // 生理与状态集合 (NPC默认使用)
 const PhysiologySchema = PhysiologyBaseSchema.prefault({
-  生命状态: {}, 当前意志力: 1, 意志力上限缓存: 1, 能量池: {}, 不良状态点数: {}, 固有状态: [], 增益状态: [], 基因锁: {}, 衍生属性速查: {}
+  生命状态: {}, 意志力: 1, 意志力上限: 1, 能量池: {}, 不良状态点数: {}, 固有状态: [], 增益状态: [], 基因锁: {}, 衍生属性: {}
 });
 
 // ----------------------------------------------------------------------
@@ -138,7 +130,7 @@ const FeatSchema = z.object({
   前提: z.string().prefault('无'),
   描述: z.string().prefault(''),
   特性列表: z.array(TraitSchema).prefault([]),
-  关键词: z.string().prefault('')
+  关键词: z.string().describe('只写用【】包裹的简述，例如：【防弹】、【追踪】等').prefault('')
 });
 
 // 模板类(血统/改造/瞳术/修炼体系/典籍)
@@ -147,14 +139,14 @@ const TemplateSchema = z.object({
   模板分类: z.enum(['血统', '改造', '瞳术', '修炼体系', '典籍', '流派', '称号']).prefault('血统'),
   本质: z.string().prefault('魔幻本质'),
   前提: z.string().prefault('无'),
-  当前评级或层数: z.string().prefault('D级'),
+  强化等级: z.string().prefault('D级'),
   价格: z.string().prefault(''),
   描述: z.string().prefault(''),
-  属性加成记录: z.record(z.string(), z.coerce.number()).describe('如 { 力量: 1, 敏捷: 1 } 以便脚本统计').prefault({}),
+  属性加成: z.record(z.string(), z.coerce.number()).describe('如 { 力量: 1, 敏捷: 1 } 以便脚本统计').prefault({}),
   能量池说明: z.string().prefault('无'),
   技能树说明: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([]),
-  关键词: z.string().prefault('')
+  关键词: z.string().describe('只写用【】包裹的简述，例如：【防弹】、【追踪】等').prefault('')
 });
 
 // 技艺与法术
@@ -196,17 +188,18 @@ const ItemBaseSchema = z.object({
   重量: z.string().prefault('1公斤'), // string以便记录如"0.5公斤"
   价格: z.string().prefault(''),
   描述: z.string().prefault(''),
-  数量: z.coerce.number().prefault(1)
+  数量: z.coerce.number().prefault(1),
+  在空间内: z.boolean().describe('是否被收入空间道具中（不计负重）').prefault(false)
 });
 
 const EquipmentBaseSchema = ItemBaseSchema.extend({
-  已装备: z.boolean().prefault(false)
+  已装备: z.boolean().describe('是否穿戴在身上').prefault(false),
+  关键词: z.string().describe('只写用【】包裹的简述，如：【空间】、【防弹】').prefault('')
 });
 
 // 武器
 const WeaponSchema = EquipmentBaseSchema.extend({
   武器伤害: z.string().prefault('0L'), // 如 4L, 2B
-  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
@@ -214,25 +207,22 @@ const WeaponSchema = EquipmentBaseSchema.extend({
 const ArmorSchema = EquipmentBaseSchema.extend({
   盔甲防御: z.coerce.number().prefault(0),
   盾牌防御: z.coerce.number().optional(),
-  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
 // 饰品结构
 const AccessorySchema = EquipmentBaseSchema.extend({
-  关键词: z.string().prefault('无'),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
-// 空间容器结构 (如战术腰包、空间戒指)
-const ContainerSchema = EquipmentBaseSchema.extend({
+// 空间道具结构 (如战术腰包、空间戒指)
+const SpatialItemSchema = EquipmentBaseSchema.extend({
   空间体积上限: z.coerce.number().prefault(10),
-  内容物: z.array(z.string()).describe('记录内部存放的物品键名，内部物品不计入负重').prefault([]),
   特性列表: z.array(TraitSchema).prefault([])
 });
 
-// 消耗品
-const ConsumableSchema = ItemBaseSchema.extend({
+// 其他物品 (原杂物/消耗品)
+const OtherItemSchema = ItemBaseSchema.extend({
   效果: z.string().prefault('')
 });
 
@@ -287,17 +277,17 @@ const ProtagonistSchema = z.object({
   生理与状态: PhysiologyBaseSchema.extend({
     负重系统: EncumbranceSchema
   }).prefault({
-    生命状态: {}, 当前意志力: 1, 意志力上限缓存: 1, 能量池: {}, 不良状态点数: {}, 固有状态: [], 增益状态: [], 基因锁: {}, 负重系统: {}
+    生命状态: {}, 意志力: 1, 意志力上限: 1, 能量池: {}, 不良状态点数: {}, 固有状态: [], 增益状态: [], 基因锁: {}, 负重系统: {}, 衍生属性: {}
   }),
 
   物品与资产: z.object({
     武器库: z.record(z.string(), WeaponSchema).prefault({}),
     防具库: z.record(z.string(), ArmorSchema).prefault({}),
     饰品库: z.record(z.string(), AccessorySchema).prefault({}),
-    容器库: z.record(z.string(), ContainerSchema).prefault({}),
-    消耗品与杂物: z.record(z.string(), z.union([ConsumableSchema, ItemBaseSchema])).prefault({}),
+    空间道具库: z.record(z.string(), SpatialItemSchema).prefault({}),
+    其他物品: z.record(z.string(), z.union([OtherItemSchema, ItemBaseSchema])).prefault({}),
     载具库: z.record(z.string(), VehicleSchema).prefault({})
-  }).prefault({ 武器库: {}, 防具库: {}, 饰品库: {}, 容器库: {}, 消耗品与杂物: {}, 载具库: {} })
+  }).prefault({ 武器库: {}, 防具库: {}, 饰品库: {}, 空间道具库: {}, 其他物品: {}, 载具库: {} })
 });
 
 // NPC专属结构：简化年龄，简化物品库，强制包含详细社交关系
@@ -335,7 +325,6 @@ const NpcSchema = z.object({
 
 // ----------------------------------------------------------------------
 // 5. 世界记录与主神空间
-// 5. 世界记录与主神空间
 // ----------------------------------------------------------------------
 
 const QuestRewardSchema = z.object({
@@ -351,7 +340,6 @@ const QuestSchema = z.object({
   时间限制: z.string().prefault('无'),
   成功奖励: QuestRewardSchema.optional(),
   失败惩罚: z.string().describe('纯文本描述惩罚，如抹杀、扣除点数等').prefault('无'),
-  失败惩罚: z.string().describe('纯文本描述惩罚，如抹杀、扣除点数等').prefault('无'),
   当前状态: z.enum(['未触发', '进行中', '已完成', '已失败']).prefault('进行中')
 });
 
@@ -362,22 +350,22 @@ const TeamBattleSchema = z.object({
 }).prefault({ 是否开启: false, 敌对小队: [], 己方积分: 0 });
 
 const GodSpaceStoreSchema = z.object({
-  武器列表: z.array(WeaponSchema).prefault([]),
-  防具列表: z.array(ArmorSchema).prefault([]),
-  强化模板列表: z.array(TemplateSchema).prefault([]),
-  物品与消耗品列表: z.array(z.union([ConsumableSchema, ItemBaseSchema])).prefault([])
-}).prefault({ 武器列表: [], 防具列表: [], 强化模板列表: [], 物品与消耗品列表: [] });
+  科幻类兑换: z.array(z.union([WeaponSchema, ArmorSchema, AccessorySchema, SpatialItemSchema, OtherItemSchema, VehicleSchema, ItemBaseSchema])).prefault([]),
+  魔法传说类兑换: z.array(z.union([WeaponSchema, ArmorSchema, AccessorySchema, SpatialItemSchema, OtherItemSchema, VehicleSchema, ItemBaseSchema])).prefault([]),
+  血统及技能: z.array(z.union([TemplateSchema, TechniqueSchema, FeatSchema])).prefault([]),
+  材料及药品: z.array(z.union([OtherItemSchema, ItemBaseSchema])).prefault([])
+}).prefault({ 科幻类兑换: [], 魔法传说类兑换: [], 血统及技能: [], 材料及药品: [] });
 
 const WorldRecordSchema = z.object({
   当前影片信息: z.object({
     名称: z.string().prefault('主神空间'),
-    类型: z.string().prefault('中转站'),
-    难度评级: z.string().prefault('未知'),
-    本质倾向: z.string().prefault('混合'),
+    类型: z.string().prefault('无'),
+    难度评级: z.string().prefault('无'),
+    本质倾向: z.string().prefault('无'),
     当前区域: z.string().prefault('广场平台'),
     当前地标: z.string().prefault('中央光球'),
-    当前精确时间: z.string().describe('如 YYYY-MM-DD HH:mm').prefault('未知')
-  }).prefault({ 名称: '主神空间', 类型: '中转站', 难度评级: '未知', 本质倾向: '混合', 当前区域: '广场平台', 当前地标: '中央光球', 当前精确时间: '未知' }),
+    当前时间: z.string().prefault('倒计时10天')
+  }).prefault({ 名称: '主神空间', 类型: '无', 难度评级: '无', 本质倾向: '无', 当前区域: '广场平台', 当前地标: '中央光球', 当前时间: '倒计时10天' }),
 
   团战状态: TeamBattleSchema,
 
@@ -386,13 +374,13 @@ const WorldRecordSchema = z.object({
   环境状态: z.array(z.string()).describe('记录场景临时效应如高辐射、暴风雨等').prefault([]),
 
   主神空间档案: z.object({
-    恐怖片经历计数: z.coerce.number().prefault(0),
-    距离下次传送天数: z.coerce.number().prefault(10),
+    恐怖片经历计数: z.coerce.number().prefault(1),
+    恐怖片倒计时: z.coerce.number().describe('返回主神空间后开始倒计时').prefault(10),
     已解锁世界列表: z.array(z.string()).describe('首位应为上一场经历的世界').prefault([]),
     私人房间状态: z.string().prefault('10平方米白墙空房间'),
     培元固本次数: z.coerce.number().transform(v => _.clamp(v, 0, 3)).prefault(0),
     主神商店当前列表: GodSpaceStoreSchema
-  }).prefault({ 恐怖片经历计数: 0, 距离下次传送天数: 10, 已解锁世界列表: [], 私人房间状态: '10平方米白墙空房间', 培元固本次数: 0, 主神商店当前列表: {} })
+  }).prefault({ 恐怖片经历计数: 1, 恐怖片倒计时: 10, 已解锁世界列表: [], 私人房间状态: '10平方米白墙空房间', 培元固本次数: 0, 主神商店当前列表: {} })
 }).prefault({
   当前影片信息: {},
   团战状态: {},
@@ -411,7 +399,7 @@ export const Schema = z.object({
   世界记录: WorldRecordSchema,
 
   // 主角数据
-  主角: ProtagonistSchema.prefault({
+  轮回者: ProtagonistSchema.prefault({
     属性面板: {},
     技能列表: {},
     特质与模板: {},

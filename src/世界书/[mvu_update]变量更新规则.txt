@@ -1,33 +1,37 @@
 ---
 变量更新规则:
-  主角.属性面板:
+  轮回者.基本属性池:
     type: |-
       {
-        力量: { 基础值: number; };
-        敏捷: { 基础值: number; };
-        耐力: { 基础值: number; };
-        智力: { 基础值: number; };
-        感知: { 基础值: number; };
-        决心: { 基础值: number; };
-        风度: { 基础值: number; };
-        操控: { 基础值: number; };
-        沉着: { 基础值: number; };
+        力量: number;
+        敏捷: number;
+        耐力: number;
+        智力: number;
+        感知: number;
+        决心: number;
+        风度: number;
+        操控: number;
+        沉着: number;
       }
     check:
-      - "基础值：仅在主神空间花费分数强化，或经历剧情获得永久属性成长时由 ST 手动更新数值"
+      - "这是隐藏的基础属性。仅在主神空间花费分数强化，或经历剧情获得永久属性成长时修改数值！"
 
-  主角.技能列表:
+  轮回者.属性面板:
+    check:
+      - "这是脚本自动计算好附加属性后的展示面板。绝对禁止 AI 在这里做任何修改或写入！"
+
+  轮回者.技能列表:
     type: |-
       {
-        [技能名称: string]: { 等级: number; 已解锁专业: string[]; };
+        [技能名称: string]: { 等级: number; 专业: string[]; };
       }
     check:
-      - "技能名称可以是设定的基础19项（运动、肉搏、驾驶、枪械、手上功夫、隐藏、求生、白刃、学识、电脑、手艺、调查、医学、神秘学、科学、动物沟通、感受、表达、胁迫、交际、掩饰。），也可以是特定子技能（格式必须为 '主分类-子类'，例如：'手艺-制造科技盔甲'、'表达-演奏'）"
+      - "技能名称可以是设定的基础19项（运动、肉搏、驾驶、枪械、手上功夫、隐藏、求生、白刃、学识、电脑、手艺、调查、医学、神秘学、科学、动物沟通、感受、表达、胁迫、交际、掩饰。），也可以是特定子技能"
       - "仅在花费 XP 升级，或剧情中学习时更新技能等级"
-      - "基础技能达到3级或4级时可免费获得一个专业（记录在已解锁专业数组中）；如果是 '手艺-制造' 这种子技能，其子分类名本身就是专业，直接通过子技能名生效，无需填入已解锁专业"
+      - "基础技能达到3级或4级时可免费获得一个专业（记录在已解锁专业数组中）；如果是 '手艺-制造' 这种子技能，其子分类名本身就是专业"
 
 
-  主角.特质与模板.专长列表:
+  轮回者.特质与模板.专长列表:
     type: |-
       {
         [专长名: string]: {
@@ -45,7 +49,7 @@
       - "在主神空间兑换专长或在剧情中领悟/获得缺陷时新增记录"
       - "关键词只能写用【】包裹的简述，例如：【防弹】、【无限弹药】"
 
-  主角.特质与模板.强化模板:
+  轮回者.特质与模板.强化模板:
     type: |-
       {
         [模板名: string]: {
@@ -53,10 +57,10 @@
           模板分类: "血统" | "改造" | "瞳术" | "修炼体系" | "典籍" | "流派" | "称号";
           本质: string;
           前提: string;
-          当前评级或层数: string;
+          强化等级: string;
           价格: string;
           描述: string;
-          属性加成记录: { [属性名: string]: number };
+          属性加成: { [属性名: string]: number };
           能量池说明: string;
           技能树说明: string;
           特性列表: {名称: string; 效果: string}[];
@@ -68,7 +72,7 @@
       - "关键词只能写用【】包裹的简述，例如：【防弹】、【追踪】"
       - "每等级会提供两项属性（D/C/B/A/AA/S=2/4/8/16/24/32；单项属性上限1/2/4/8/12/16），不可为负"
 
-  主角.特质与模板.技艺法术:
+  轮回者.特质与模板.技艺法术:
     type: |-
       {
         [法术名: string]: {
@@ -95,41 +99,40 @@
     check:
       - "在主神空间兑换或在剧情中学习法术/技艺时新增记录"
 
-  主角.生理与状态:
+  轮回者.生理与状态:
     type: |-
       {
         生命状态: { 完好: number; 冲击B: number; 严重L: number; 恶性A: number; };
-        当前意志力: number;
+        意志力: number;
         能量池: { 名称: string; 当前值: number; 基础上限加成: number; };
         不良状态点数: { [状态名: string]: number };
         固有状态: string[];
         增益状态: string[];
-        基因锁: { 最高已开启阶数: number; 熟练度: number; 当前处于开启阶数: number; 反噬记录: object; };
+        基因锁: { 最高阶数: number; 熟练度: number; 开启状态: boolean; 开启轮数: number; };
       }
     check:
       - "生命状态: 仅记录受到伤害或治疗的绝对值增减，禁止自行计算满溢转化"
       - "不良状态点数: 遭受流血、剧痛等时增加数值，仅记录数值，不记录轻/重度"
       - "固有状态: 遭受倒地、昏迷、失能时添加，解除时移除"
       - "增益状态: 获得加速、隐形、防护等非数值型BUFF时添加状态名；持续时间结束或主动解除时移除"
-      - "基因锁: 战斗中无论是否曾开启过该阶基因锁，每轮熟练度均自动 +2。开启时更新当前阶数和记录开启轮数；关闭或战斗结束时，根据反噬规则由脚本自动扣除属性或增加状态，此处重置当前阶数为0并记录反噬轮数即可"
+      - "基因锁: 修改 开启状态 为 true/false 即可，开启轮数和每轮熟练度由脚本底层自动计算，请勿修改！"
 
-  主角.物品与资产:
+  轮回者.物品与资产:
     type: |-
       {
-        装备栏: { 主武器: string; 副武器盾牌: string; 盔甲: string; 饰品_其他: string[]; 装备的容器: string[]; };
-        武器库: { [武器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 武器伤害: string; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
-        防具库: { [防具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 盔甲防御: number; 盔甲减值: number; 敏捷上限: string; 盾牌防御?: number; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
-        饰品库: { [饰品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
-        容器库: { [容器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 空间体积上限: number; 内容物: string[]; 特性列表: {名称: string; 效果: string}[]; } };
-        消耗品与杂物: { [物品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 效果?: string; } };
-        载具库: { [载具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 载具类型: string; 生命: number; 护甲: number; 硬度: number; 速度: string; 灵活性: string; 载员: string; 出力: number; 机动: number; 能源: string; 特性列表: {名称: string; 效果: string}[]; } };
+        武器库: { [武器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 已装备: boolean; 在空间内: boolean; 武器伤害: string; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
+        防具库: { [防具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 已装备: boolean; 在空间内: boolean; 盔甲防御: number; 盾牌防御?: number; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
+        饰品库: { [饰品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 已装备: boolean; 在空间内: boolean; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
+        空间道具库: { [容器名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 已装备: boolean; 空间体积上限: number; 关键词: string; 特性列表: {名称: string; 效果: string}[]; } };
+        其他物品: { [物品名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 在空间内: boolean; 效果?: string; } };
+        载具库: { [载具名: string]: { 名称: string; 本质: string; 分类: string; 前提: string; 体积: number; 重量: string; 价格: string; 描述: string; 数量: number; 在空间内: boolean; 载具类型: string; 生命: number; 护甲: number; 硬度: number; 速度: string; 灵活性: string; 载员: string; 出力: number; 机动: number; 能源: string; 特性列表: {名称: string; 效果: string}[]; } };
       }
     check:
-      - "装备栏: 穿脱装备或饰品时，将库中的物品名更新至主武器/防具/饰品等位置"
-      - "购买、拾取等更新库时包含详细设定。关键词仅写【】包裹的短词，如【防弹】"
-      - "容器库.[容器名].内容物: 将物品存入或取出空间容器时，增减该列表中的物品名"
+      - "装备管理: 只需将物品的 已装备 设为 true 即可生效。限制为：武器最多装备2件，防具1件，饰品2件，空间道具1件。超出部分会被系统自动卸下。"
+      - "空间收纳: 只需将物品的 在空间内 设为 true 即可收纳，不计负重。放入总容积不能超过空间体积上限。"
+      - "关键词仅写【】包裹的短词，如【防弹】"
 
-  主角.资源:
+  轮回者.资源:
     type: |-
       {
         奖励点: number;
@@ -139,7 +142,7 @@
     check:
       - "根据主线/支线结算奖励增加"
       - "兑换、医疗时严格扣除消耗"
-      - "必须精确记录各个等级支线剧情的持有数量（如 {D:2, C:1...}）。"
+      - "支线剧情直接写入包含支线缩写的字符串即可，如 'C×1 D×1'，或者 '无'。系统底层会自动进行 D 到 S 级的三进一换算（3D=1C, 3C=1B...），请勿自行计算进位！"
 
   世界记录.当前影片_副本信息:
     type: |-

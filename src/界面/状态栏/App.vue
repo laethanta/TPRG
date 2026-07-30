@@ -155,11 +155,11 @@
           </div>
           <div class="list-row">
             <span class="label">PTS</span>
-            <span class="value">{{ store.protagonist?.主神货币?.奖励点 || 0 }}</span>
+            <span class="value">{{ store.protagonist?.资源?.奖励点 || 0 }}</span>
           </div>
           <div class="list-row">
             <span class="label">XP</span>
-            <span class="value">{{ store.protagonist?.主神货币?.经验值_XP || 0 }}</span>
+            <span class="value">{{ store.protagonist?.资源?.经验值 || 0 }}</span>
           </div>
         </div>
 
@@ -280,15 +280,15 @@ const hpPercents = computed(() => {
   if (!hp) return { intact: 100, shock: 0, lethal: 0, aggra: 0 };
   return {
     intact: (hp.完好 / max) * 100,
-    shock: (hp.冲击_B / max) * 100,
-    lethal: (hp.严重_L / max) * 100,
-    aggra: (hp.恶性_A / max) * 100
+    shock: (hp.冲击B / max) * 100,
+    lethal: (hp.严重L / max) * 100,
+    aggra: (hp.恶性A / max) * 100
   };
 });
 
 // WP百分比
 const wpPercent = computed(() => {
-  const wp = store.protagonist?.生理与状态?.当前意志力 || 0;
+  const wp = store.protagonist?.生理与状态?.意志力 || 0;
   const max = store.derivedStats.最大意志力 || 1;
   return Math.min(100, Math.max(0, (wp / max) * 100));
 });
@@ -296,12 +296,12 @@ const wpPercent = computed(() => {
 // EP(能量池)计算
 const energyMax = computed(() => {
   const ep = store.protagonist?.生理与状态?.能量池;
-  return ep?.上限缓存 || 1;
+  return ep?.上限 || 1;
 });
 const epPercent = computed(() => {
   const ep = store.protagonist?.生理与状态?.能量池;
   if (!ep) return 0;
-  const max = ep.上限缓存 || 1;
+  const max = ep.上限 || 1;
   return Math.min(100, Math.max(0, (ep.当前值 / max) * 100));
 });
 
