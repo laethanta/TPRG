@@ -111,6 +111,13 @@
     </transition>
 
     <!-- TODO: 未来计划加入UI分辨率/缩放比例的自定义设定 -->
+    <button class="sys-menu-btn" @click="openModal('menu')" title="系统菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
     <div class="panel-layout">
       <!-- 左侧栏：核心资质与基础参数 -->
       <aside class="left-column">
@@ -137,14 +144,6 @@
               <span class="bloodline-level">{{ store.bloodline.level }}</span>
             </div>
           </div>
-
-          <button class="sys-menu-btn" @click="openModal('menu')" title="系统菜单">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
         </div>
 
         <!-- 资产区：支线剧情、奖励点、XP (改为上下排列) -->
@@ -326,6 +325,7 @@ $text-dim: #a1a1aa;
 $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
 
 .trpg-status-panel {
+  position: relative;
   width: 100%;
   background: linear-gradient(180deg, #111116 0%, #08080a 100%);
   color: $text-main;
@@ -452,6 +452,10 @@ $glow-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
   }
 
   .sys-menu-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
     background: transparent;
     border: 1px solid rgba(255,255,255,0.1);
     color: $text-dim;

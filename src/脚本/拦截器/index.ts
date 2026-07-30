@@ -165,16 +165,15 @@ $(async () => {
       else if (volume <= 12) hpMod = 10;
       else hpMod = 17;
 
-      if (entity.生理与状态?.负重系统) {
-        const sys = entity.生理与状态.负重系统;
-        sys.当前负重 = totalWeight;
-        const limit = (10 + 3 * getAttr('力量')) * (getLeg('力量') + 1);
-        sys.负重上限 = limit;
-        if (totalWeight > limit * 3) sys.负重状态 = '压垮';
-        else if (totalWeight > limit * 2) sys.负重状态 = '重度';
-        else if (totalWeight > limit) sys.负重状态 = '中度';
-        else sys.负重状态 = '轻度';
-      }
+      if (!entity.生理与状态.负重系统) entity.生理与状态.负重系统 = {};
+      const sys = entity.生理与状态.负重系统;
+      sys.当前负重 = totalWeight;
+      const limit = (10 + 3 * getAttr('力量')) * (getLeg('力量') + 1);
+      sys.负重上限 = limit;
+      if (totalWeight > limit * 3) sys.负重状态 = '压垮';
+      else if (totalWeight > limit * 2) sys.负重状态 = '重度';
+      else if (totalWeight > limit) sys.负重状态 = '中度';
+      else sys.负重状态 = '轻度';
 
       // 5. 计算衍生属性
       const legEnd = getLeg('耐力');
@@ -188,19 +187,25 @@ $(async () => {
         return s ? Number(s.等级||0) : 0;
       };
 
-      if (entity.生理与状态?.衍生属性) {
-        const derived = entity.生理与状态.衍生属性;
-        derived.最大HP = MAX_HP;
-        derived.最大意志力 = getAttr('决心') + getAttr('沉着') + (getLeg('决心') * 3) + (getLeg('沉着') * 3);
-        derived.基础防御 = baseDef + armorDef + shieldDef;
-        derived.防御附加成功 = getLeg('敏捷') + getLeg('感知');
-        derived.先攻 = getAttr('敏捷') + getAttr('沉着') + (getLeg('沉着') * 3);
-        derived.速度 = getAttr('力量') + getAttr('敏捷') + 5;
-        derived.意志豁免 = getAttr('决心') + getSkill('感受') + (getLeg('决心') * 3);
-        derived.反射豁免 = getAttr('敏捷') + getSkill('运动') + (getLeg('敏捷') * 3);
-        derived.强韧豁免 = getAttr('耐力') + getSkill('求生') + (legEnd * 3);
-        derived.空间余量 = Math.max(0, spatialCapacity - spatialUsed);
+      if (!entity.生理与状态.衍生属性) entity.生理与状态.衍生属性 = {};
+      const derived = entity.生理与状态.衍生属性;
+      derived.最大HP = MAX_HP;
+      const MAX_WP = getAttr('决心') + getAttr('沉着') + (getLeg('决心') * 3) + (getLeg('沉着') * 3);
+      derived.最大意志力 = MAX_WP;
+      derived.基础防御 = baseDef + armorDef + shieldDef;
+      derived.防御附加成功 = getLeg('敏捷') + getLeg('感知');
+      derived.先攻 = getAttr('敏捷') + getAttr('沉着') + (getLeg('沉着') * 3);
+      derived.速度 = getAttr('力量') + getAttr('敏捷') + 5;
+      derived.意志豁免 = getAttr('决心') + getSkill('感受') + (getLeg('决心') * 3);
+      derived.反射豁免 = getAttr('敏捷') + getSkill('运动') + (getLeg('敏捷') * 3);
+      derived.强韧豁免 = getAttr('耐力') + getSkill('求生') + (legEnd * 3);
+      derived.空间余量 = Math.max(0, spatialCapacity - spatialUsed);
+
+      // 顺便同步更新生命状态和意志力的直接上限
+      if (entity.生理与状态.生命状态) {
+        entity.生理与状态.生命状态.上限 = MAX_HP;
       }
+      entity.生理与状态.意志力上限 = MAX_WP;
 
       // 6. 生命值 B/L/A 满溢转化逻辑
       let b = hp.冲击B || 0;
