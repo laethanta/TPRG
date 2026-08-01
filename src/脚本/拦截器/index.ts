@@ -63,6 +63,8 @@ $(async () => {
       const isInit = typeof variables_before_update !== 'object';
       if (!isInit && oldEntity) {
         oldBuffs = getBuffs(oldEntity);
+      } else if (isInit) {
+        oldBuffs = { ...newBuffs };
       }
 
       for (const name of attrNames) {
@@ -167,6 +169,8 @@ $(async () => {
 
       if (!entity.生理与状态.负重系统) entity.生理与状态.负重系统 = {};
       const sys = entity.生理与状态.负重系统;
+      // 消除浮点数精度问题，最多保留小数点后两位
+      totalWeight = Math.round(totalWeight * 100) / 100;
       sys.当前负重 = totalWeight;
       const limit = (10 + 3 * getAttr('力量')) * (getLeg('力量') + 1);
       sys.负重上限 = limit;
